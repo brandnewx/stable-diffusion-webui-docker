@@ -44,6 +44,7 @@ git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 cd stable-diffusion-webui
 git reset --hard 98947d173e3f1667eba29c904f681047dea9de90
 pip install -r requirements_versions.txt
+pip install accelerate
 EOF
 
 
@@ -76,6 +77,7 @@ cd stable-diffusion-webui
 git fetch
 git reset --hard ${SHA}
 pip install -r requirements_versions.txt
+pip install accelerate
 EOF
 
 RUN pip install opencv-python-headless
