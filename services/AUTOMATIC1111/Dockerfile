@@ -92,8 +92,8 @@ EOF
 # Dreambooth extension
 RUN <<EOF
 pip install -r ${ROOT}/repositories/sd_dreambooth_extension/requirements.txt
-rm -rf /data/config/auto/extensions/sd_dreambooth_extension
 mkdir -p /data/config/auto/extensions/sd_dreambooth_extension/
+rm -rf /data/config/auto/extensions/sd_dreambooth_extension/*
 cp -r ${ROOT}/repositories/sd_dreambooth_extension/* /data/config/auto/extensions/sd_dreambooth_extension/
 EOF
 
