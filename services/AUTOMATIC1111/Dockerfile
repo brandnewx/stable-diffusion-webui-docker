@@ -89,9 +89,13 @@ mv  ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
-# Dreambooth extension
+# Install extensions pip packages
 RUN <<EOF
 pip install -r ${ROOT}/repositories/sd_dreambooth_extension/requirements.txt
+EOF
+
+# Copy extensions folders
+RUN <<EOF
 mkdir -p /data/config/auto/extensions/sd_dreambooth_extension/
 rm -r /data/config/auto/extensions/sd_dreambooth_extension/*
 EOF
