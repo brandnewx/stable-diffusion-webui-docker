@@ -90,7 +90,12 @@ sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}
 EOF
 
 # Dreambooth extension
-RUN pip install -r ${ROOT}/repositories/sd_dreambooth_extension/requirements.txt
+RUN <<EOF
+pip install -r ${ROOT}/repositories/sd_dreambooth_extension/requirements.txt
+rm -rf /data/config/auto/extensions/sd_dreambooth_extension
+mkdir -p /data/config/auto/extensions/sd_dreambooth_extension/
+cp -r ${ROOT}/repositories/sd_dreambooth_extension/* /data/config/auto/extensions/sd_dreambooth_extension/
+EOF
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
 ENV CLI_ARGS=""
