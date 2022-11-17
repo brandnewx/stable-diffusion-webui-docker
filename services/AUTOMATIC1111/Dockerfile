@@ -92,7 +92,7 @@ RUN <<EOF
 cat <<'EOE' > /install-extension.sh
 mkdir -p ${ROOT}/extensions/"$1" && cd ${ROOT}/extensions/"$1" && git init && git remote add origin "$2" && git fetch origin "$3" --depth=1 && git reset --hard "$3" && rm -rf .git
 cd ${ROOT}/extensions/"$1"
-[[ -f requirement.txt ]] && pip install -r requirements.txt
+[[ -f requirements.txt ]] && pip install -r requirements.txt
 [[ -f install.py ]] && python3 install.py
 EOE
 EOF
