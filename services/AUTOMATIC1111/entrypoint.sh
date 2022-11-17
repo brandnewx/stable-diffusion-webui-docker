@@ -35,8 +35,13 @@ MOUNTS["${ROOT}/models/deepbooru"]="/data/Deepdanbooru"
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
 MOUNTS["${ROOT}/config.json"]="/data/config/auto/config.json"
 MOUNTS["${ROOT}/ui-config.json"]="/data/config/auto/ui-config.json"
+
 # Not mounting extensions since extensions need to install packages
 # MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
+
+# fix path for some extensions
+MOUNTS["/config.json"]="/data/config/auto/config.json"
+MOUNTS["/ui-config.json"]="/data/config/auto/ui-config.json"
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"
