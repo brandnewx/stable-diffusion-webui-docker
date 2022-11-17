@@ -22,8 +22,7 @@ RUN . /clone.sh CodeFormer https://github.com/sczhou/CodeFormer.git c5b4593074ba
 RUN . /clone.sh BLIP https://github.com/salesforce/BLIP.git 48211a1594f1321b00f14c9f7a5b4813144b2fb9
 RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042ca0da89c14d1dd59d73883280f8fce991
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
-RUN . /clone.sh sd_dreambooth_extension https://github.com/d8ahazard/sd_dreambooth_extension 725d85ca5485246a430d2f31f624646d061e8104
-
+RUN . /clone.sh stable-diffusion/extensions/sd_dreambooth_extension https://github.com/d8ahazard/sd_dreambooth_extension 725d85ca5485246a430d2f31f624646d061e8104
 
 FROM alpine:3 as xformers
 RUN apk add aria2
@@ -91,14 +90,7 @@ EOF
 
 # Install extensions pip packages
 RUN <<EOF
-pip install -r ${ROOT}/repositories/sd_dreambooth_extension/requirements.txt
-EOF
-
-# Copy extensions folders
-RUN <<EOF
-rm -rf /data/config/auto/extensions/sd_dreambooth_extension/
-mkdir -p /data/config/auto/extensions/sd_dreambooth_extension/
-cp -r ${ROOT}/repositories/sd_dreambooth_extension/* /data/config/auto/extensions/sd_dreambooth_extension/
+pip install -r ${ROOT}/repositories/stable-diffusion/extensions/sd_dreambooth_extension/requirements.txt
 EOF
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
