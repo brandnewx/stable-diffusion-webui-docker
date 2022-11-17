@@ -96,8 +96,8 @@ EOF
 
 # Copy extensions folders
 RUN <<EOF
+rm -rf /data/config/auto/extensions/sd_dreambooth_extension/
 mkdir -p /data/config/auto/extensions/sd_dreambooth_extension/
-rm -r /data/config/auto/extensions/sd_dreambooth_extension/
 cp -r ${ROOT}/repositories/sd_dreambooth_extension/* /data/config/auto/extensions/sd_dreambooth_extension/
 EOF
 
