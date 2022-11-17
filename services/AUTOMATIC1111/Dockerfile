@@ -44,7 +44,6 @@ git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 cd stable-diffusion-webui
 git reset --hard 98947d173e3f1667eba29c904f681047dea9de90
 pip install -r requirements_versions.txt
-pip install accelerate
 EOF
 
 
@@ -77,7 +76,6 @@ cd stable-diffusion-webui
 git fetch
 git reset --hard ${SHA}
 pip install -r requirements_versions.txt
-pip install accelerate
 EOF
 
 RUN pip install opencv-python-headless
@@ -89,6 +87,9 @@ python3 /docker/info.py ${ROOT}/modules/ui.py
 mv  ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
+
+# Dreambooth
+RUN pip install accelerate==0.12.0 torchvision transformers>=4.21.0 ftfy tensorboard modelcards
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
 ENV CLI_ARGS=""
