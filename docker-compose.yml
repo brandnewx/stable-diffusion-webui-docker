@@ -5,13 +5,13 @@ x-base_service: &base_service
       - "7860:7860"
     volumes:
       - &v1 ./data:/data
-      - &v2 ./output:/output
+      - &v2 /richfast-jfs/sd/output:/output
     deploy:
       resources:
         reservations:
           devices:
               - driver: nvidia
-                device_ids: ['0']
+                count: all
                 capabilities: [gpu]
 
 name: webui-docker
@@ -29,7 +29,7 @@ services:
     build: ./services/AUTOMATIC1111
     image: sd-auto:16
     environment:
-      - CLI_ARGS=--allow-code --medvram --xformers
+      - CLI_ARGS=--allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access
 
   auto-cpu:
     <<: *automatic
