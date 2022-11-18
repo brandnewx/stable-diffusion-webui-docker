@@ -6,7 +6,8 @@ x-base_service: &base_service
     volumes:
       - &v1 ./data:/data
       - &v2 /richfast-jfs/sd/output:/output
-      - &v2 /richfast-jfs/sd/input:/input
+      - &v3 /richfast-jfs/sd/input:/input
+      - &v4 /richfast-jfs/sd/dreambooth:/stable-diffusion-webui/models/dreambooth
     deploy:
       resources:
         reservations:
