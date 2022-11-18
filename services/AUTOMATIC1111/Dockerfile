@@ -108,7 +108,7 @@ RUN . /install-extension.sh stable-diffusion-webui-aesthetic-image-scorer https:
 RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN <<EOF
-python3 -u ${ROOT}/webui.py --test --ui_debug_mode
+python3 -u ${ROOT}/webui.py --test --ui-debug-mode
 EOF
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
