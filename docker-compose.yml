@@ -31,6 +31,13 @@ services:
     image: sd-auto:16
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
+      
+  auto-dreambooth:
+    <<: *automatic
+    profiles: ["auto-cpu"]
+    deploy: {}
+    environment:
+      - CLI_ARGS=--allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator --ui-debug-mode 
 
   auto-cpu:
     <<: *automatic
