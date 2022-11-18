@@ -39,9 +39,9 @@ RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y &&
 
 
 RUN <<EOF
-git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+git clone https://github.com/brandnewx/stable-diffusion-webui.git
 cd stable-diffusion-webui
-git reset --hard 98947d173e3f1667eba29c904f681047dea9de90
+git reset --hard e26174a81f81ce876d037877c33795424208b090
 pip install -r requirements_versions.txt
 EOF
 
@@ -69,7 +69,7 @@ RUN pip install opencv-python-headless \
 # Note: don't update the sha of previous versions because the install will take forever
 # instead, update the repo state in a later step
 
-ARG SHA=98947d173e3f1667eba29c904f681047dea9de90
+ARG SHA=e26174a81f81ce876d037877c33795424208b090
 RUN <<EOF
 cd stable-diffusion-webui
 git fetch
@@ -107,7 +107,7 @@ RUN . /install-extension.sh stable-diffusion-webui-aesthetic-image-scorer https:
 RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN <<EOF
-python3 -u ${ROOT}/webui.py --api --test
+python3 -u ${ROOT}/webui.py --test
 EOF
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
