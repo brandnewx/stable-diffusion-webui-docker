@@ -34,7 +34,7 @@ services:
       
   auto-dreambooth:
     <<: *automatic
-    profiles: ["auto-cpu"]
+    profiles: ["auto-dreambooth"]
     deploy: {}
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator --ui-debug-mode 
