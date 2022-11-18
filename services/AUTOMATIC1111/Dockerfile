@@ -108,7 +108,7 @@ RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN <<EOF
 python3 -u ${ROOT}/webui.py
-EOE
+EOF
 
 WORKDIR ${ROOT}/repositories/stable-diffusion
 ENV CLI_ARGS=""
