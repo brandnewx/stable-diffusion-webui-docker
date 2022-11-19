@@ -27,13 +27,14 @@ FROM alpine:3 as xformers
 RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
-FROM python:3.10-slim
+# FROM python:3.10-slim
+FROM nvidia/pytorch:22.09-py3
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-RUN pip install torch==1.12.1+cu118 torchvision==0.13.1+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
+# RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
