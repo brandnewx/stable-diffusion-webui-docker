@@ -176,7 +176,7 @@ ENV cudnn_version=8.4.1.50
 ENV cuda_version=cuda11.6
 ENV OS=ubuntu2004
 RUN rm /usr/bin/python3 && ln -s /usr/bin/python3.10 /usr/bin/python3
-RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g && \
+RUN apt-get update && apt-get install -yq python3-software-properties apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g && \
   wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
   mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
   apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
