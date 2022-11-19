@@ -52,7 +52,7 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/c
   apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 
-FROM pytorch-ubuntu22 as xformers-ubuntu22
+FROM nvcr.io/nvidia/CUDA:11.7.0-devel-ubuntu22.04 as xformers-ubuntu22
 USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
