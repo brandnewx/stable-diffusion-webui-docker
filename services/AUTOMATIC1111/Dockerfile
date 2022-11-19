@@ -88,14 +88,17 @@ mv  ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
-# Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
+
+# Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
+ENV cudnn_version=8.4.1.50
+ENV cuda_version=cuda11.6
 RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
   mkdir -p /etc/apt/keyrings && \
   add-apt-repository contrib && \
   apt-key del 7fa2af80 && \
   wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
   dpkg -i cuda-keyring_1.0-1_all.deb && \
-  apt-get update && apt-get install -yq cuda
+  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 # Install extensions
 RUN <<EOF
