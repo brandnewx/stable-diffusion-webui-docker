@@ -28,13 +28,14 @@ RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 # FROM python:3.10-slim
-FROM nvcr.io/nvidia/pytorch:22.09-py3
+# FROM nvcr.io/nvidia/pytorch:22.09-py3
+FROM matthewfeickert/docker-python3-ubuntu:3.10.5
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-# RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
@@ -90,14 +91,14 @@ sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}
 EOF
 
 # Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
-ENV cudnn_version=8.6.0.163
-ENV cuda_version=cuda11.8
-RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
-  mkdir -p /etc/apt/keyrings && \
-  add-apt-repository contrib && \
-  apt-key del 7fa2af80 && \
-  wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
-  dpkg -i cuda-keyring_1.0-1_all.deb && \
+ENV cudnn_version=8.4.1.50
+ENV cuda_version=cuda11.6
+ENV OS=ubuntu2004
+RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g && \
+  wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
+  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
+  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
   apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 # Install extensions
