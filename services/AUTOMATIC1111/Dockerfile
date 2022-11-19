@@ -47,13 +47,11 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-RUN apt-get update -qq && apt-get install -yq python3-venv
+# RUN apt-get update -qq && apt-get install -yq python3-venv
 
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git submodule update --init --recursive && \
-  python3 -m venv venv && \
-  ./venv/scripts/activate && \
   pip install -r requirements.txt && \
   pip install wheel && \
   set NVCC_FLAGS=--allow-unsupported-compiler && \
