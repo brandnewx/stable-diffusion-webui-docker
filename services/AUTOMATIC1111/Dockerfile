@@ -89,7 +89,7 @@ sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}
 EOF
 
 # Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
-RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common && \
+RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
   mkdir -p /etc/apt/keyrings && \
   add-apt-repository contrib && \
   apt-key del 7fa2af80 && \
