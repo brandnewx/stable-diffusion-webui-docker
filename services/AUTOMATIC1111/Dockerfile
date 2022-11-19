@@ -28,7 +28,7 @@ RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 # FROM python:3.10-slim
-FROM nvidia/pytorch:22.09-py3
+FROM nvcr.io/nvidia/pytorch:22.09-py3
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -90,17 +90,17 @@ sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}
 EOF
 
 # Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
-#ENV cudnn_version=8.6.0.163
-#ENV cuda_version=cuda11.8
-#RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
-#  mkdir -p /etc/apt/keyrings && \
-#  add-apt-repository contrib && \
-#  apt-key del 7fa2af80 && \
-#  wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
-#  wget https://developer.nvidia.com/compute/cudnn/secure/8.4.1/local_installers/11.6/cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
-#  dpkg -i cuda-keyring_1.0-1_all.deb && \
-#  dpkg -i cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
-#  apt-get update && apt-get install -yq libcudnn8 libcudnn8-dev
+ENV cudnn_version=8.6.0.163
+ENV cuda_version=cuda11.8
+RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
+  mkdir -p /etc/apt/keyrings && \
+  add-apt-repository contrib && \
+  apt-key del 7fa2af80 && \
+  wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
+  wget https://developer.nvidia.com/compute/cudnn/secure/8.4.1/local_installers/11.6/cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
+  dpkg -i cuda-keyring_1.0-1_all.deb && \
+  dpkg -i cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
+  apt-get update && apt-get install -yq libcudnn8 libcudnn8-dev
 
 # Install extensions
 RUN <<EOF
