@@ -47,10 +47,12 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-# RUN apt-get update -qq && apt-get install -yq python3-venv
-
+ENV FORCE_CUDA=1
+ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
+  git fetch && \
+  git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
   pip install wheel && \
