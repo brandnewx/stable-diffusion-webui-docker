@@ -47,6 +47,8 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
+RUN apt-get update -qq && apt-get install -yq python3-venv
+
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git submodule update --init --recursive && \
