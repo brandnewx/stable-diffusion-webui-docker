@@ -58,7 +58,7 @@ WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV FORCE_CUDA=1
-ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
+ARG XFORMERS_SHA=1d31a3ac3b11f40fde7f00aa64debb0fd4d6f376
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git fetch && \
@@ -85,7 +85,7 @@ RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   pip install -r requirements_versions.txt
 
 COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers
-RUN pip install /xformers/xformers-0.0.15.dev0+103e863.d20221119-cp310-cp310-linux_x86_64.whl && rm -rf /xformers
+RUN pip install /xformers/xformers-0.0.15.dev0+1d31a3a.d20221119-cp310-cp310-linux_x86_64.whl && rm -rf /xformers
 
 ENV ROOT=/stable-diffusion-webui
 
