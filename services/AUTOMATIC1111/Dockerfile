@@ -39,9 +39,8 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && 
-  apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g /
-    fonts-dejavu-core rsync git jq moreutils && apt-get clean
+RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common /
+    wget zlib1g fonts-dejavu-core rsync git jq moreutils && apt-get clean
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && apt-get install -yq python3.10 python3-pip
 
