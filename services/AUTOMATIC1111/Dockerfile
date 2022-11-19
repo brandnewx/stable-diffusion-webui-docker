@@ -97,10 +97,8 @@ RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates cu
   add-apt-repository contrib && \
   apt-key del 7fa2af80 && \
   wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
-  wget https://developer.nvidia.com/compute/cudnn/secure/8.4.1/local_installers/11.6/cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
   dpkg -i cuda-keyring_1.0-1_all.deb && \
-  dpkg -i cudnn-local-repo-ubuntu2004-8.4.1.50_1.0-1_amd64.deb && \
-  apt-get update && apt-get install -yq libcudnn8 libcudnn8-dev
+  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 # Install extensions
 RUN <<EOF
