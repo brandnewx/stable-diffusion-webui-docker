@@ -55,8 +55,8 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   pip install -r requirements.txt && \
   pip install wheel && \
   set NVCC_FLAGS=--allow-unsupported-compiler && \
-  python setup.py build && \
-  python setup.py bdist_wheel
+  python3 setup.py build && \
+  python3 setup.py bdist_wheel
 
 
 FROM pytorch-ubuntu22
