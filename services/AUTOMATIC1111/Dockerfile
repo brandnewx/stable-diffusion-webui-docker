@@ -54,8 +54,8 @@ pip install -r requirements_versions.txt
 EOF
 
 
-COPY --from=xformers /wheel.whl xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
-RUN pip install xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl && rm xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
+# COPY --from=xformers /wheel.whl xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
+# RUN pip install xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl && rm xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
 
 
 ENV ROOT=/stable-diffusion-webui
