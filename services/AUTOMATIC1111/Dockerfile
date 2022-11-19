@@ -28,9 +28,7 @@ RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 
-# FROM python:3.10-slim
-# FROM nvcr.io/nvidia/pytorch:22.09-py3
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 USER root
 WORKDIR /
@@ -44,7 +42,7 @@ RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates cu
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && apt-get install -yq python3.10 python3-pip
 
-RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 
 RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   cd stable-diffusion-webui && \
@@ -90,9 +88,9 @@ RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
   sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 
 # Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
-ENV cudnn_version=8.4.1.50
-ENV cuda_version=cuda11.6
-ENV OS=ubuntu2004
+ENV cudnn_version=8.5.0.96
+ENV cuda_version=cuda11.7
+ENV OS=ubuntu2204
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
   mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
   apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
