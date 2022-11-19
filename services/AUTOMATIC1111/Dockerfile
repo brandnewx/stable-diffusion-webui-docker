@@ -27,7 +27,7 @@ RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 
-FROM ubuntu:22.04 as pytorch-ubuntu22
+FROM nvcr.io/nvidia/cuda:11.7.0-devel-ubuntu22.04 as cuda-pytorch-ubuntu22
 USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
@@ -42,17 +42,17 @@ RUN apt-get update -qq && apt-get install -yq python3.10 python3-pip && apt-get 
 RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 
 # Install CUDA libs (some libs like bitandbytes need CUDA to compile).
-ENV cudnn_version=8.5.0.96
-ENV cuda_version=cuda11.7
-ENV OS=ubuntu2204
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
-  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
-  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
-  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
-  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
+#ENV cudnn_version=8.5.0.96
+#ENV cuda_version=cuda11.7
+#ENV OS=ubuntu2204
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
+#  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+#  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
+#  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
+#  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 
-FROM nvcr.io/nvidia/cuda:11.7.0-devel-ubuntu22.04 as xformers-ubuntu22
+FROM cuda-pytorch-ubuntu22 as xformers-ubuntu22
 USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
