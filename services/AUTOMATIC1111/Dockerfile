@@ -63,12 +63,12 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git fetch && \
   git reset --hard ${XFORMERS_SHA} && \
-  git submodule update --init --recursive && \
-  pip install -r requirements.txt && \
-  pip install wheel && \
-  set NVCC_FLAGS=--allow-unsupported-compiler && \
-  python3 setup.py build && \
-  python3 setup.py bdist_wheel
+  git submodule update --init --recursive
+  
+RUN pip install -r requirements.txt
+RUN pip install wheel
+RUN cd /xformers && python3 setup.py build
+RUN cd /xformers && python3 setup.py bdist_wheel
 
 
 FROM cuda-pytorch-ubuntu22
