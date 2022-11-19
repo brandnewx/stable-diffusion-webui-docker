@@ -111,6 +111,11 @@ RUN <<EOF
 python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
 EOF
 
+# Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
+RUN <<EOF
+apt-get update && apt-get install -yq nvidia-cuda-toolkit nvidia-cuda-dev
+EOF
+
 # WORKDIR ${ROOT}/repositories/stable-diffusion
 WORKDIR ${ROOT}
 ENV CLI_ARGS=""
