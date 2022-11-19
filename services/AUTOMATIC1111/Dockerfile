@@ -46,13 +46,10 @@ RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url 
 RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
 
-RUN <<EOF
-git clone https://github.com/brandnewx/stable-diffusion-webui.git
-cd stable-diffusion-webui
-# git reset --hard 284cf8f322110df0920ec022937d0ebfe9a61550
-pip install -r requirements_versions.txt
-EOF
-
+RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
+  cd stable-diffusion-webui && \
+  # git reset --hard 284cf8f322110df0920ec022937d0ebfe9a61550 && \
+  pip install -r requirements_versions.txt
 
 # COPY --from=xformers /wheel.whl xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
 # RUN pip install xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl && rm xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
@@ -78,31 +75,24 @@ RUN pip install opencv-python-headless \
 # instead, update the repo state in a later step
 
 ARG SHA=e26174a81f81ce876d037877c33795424208b090
-RUN <<EOF
-cd stable-diffusion-webui
-git fetch
-# git reset --hard ${SHA}
-git reset --hard
-pip install -r requirements_versions.txt
-EOF
+RUN cd stable-diffusion-webui && \
+  git fetch & \\
+# git reset --hard ${SHA} & \\
+  git reset --hard && \
+  pip install -r requirements_versions.txt
 
 RUN pip install opencv-python-headless
 
 COPY . /docker
 
-RUN <<EOF
-python3 /docker/info.py ${ROOT}/modules/ui.py
-mv  ${ROOT}/style.css ${ROOT}/user.css
-sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
-EOF
+RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
+  mv  ${ROOT}/style.css ${ROOT}/user.css && \
+  sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 
 # Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
 ENV cudnn_version=8.4.1.50
 ENV cuda_version=cuda11.6
 ENV OS=ubuntu2004
-#RUN apt-get update && apt-get install -yq python3-apt python3-software-properties --reinstall
-#RUN rm /usr/bin/python3 && ln -sf /usr/bin/python3.10 /usr/bin/python3
-#RUN cd /usr/lib/python3/dist-packages && sudo ln -s apt_pkg.cpython-{35m,34m}-x86_64-linux-gnu.so
 RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g && \
   wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
   mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
@@ -119,6 +109,7 @@ cd ${ROOT}/extensions/"$1"
 exit 0
 EOE
 EOF
+
 RUN . /install-extension.sh sd_dreambooth_extension https://github.com/d8ahazard/sd_dreambooth_extension 725d85ca5485246a430d2f31f624646d061e8104
 RUN . /install-extension.sh stable-diffusion-webui-aesthetic-gradients https://github.com/AUTOMATIC1111/stable-diffusion-webui-aesthetic-gradients 411889ca602f20b8bb5e4d1af2b9686eab1913b1
 RUN . /install-extension.sh stable-diffusion-webui-wildcards https://github.com/AUTOMATIC1111/stable-diffusion-webui-wildcards 6ed81ed1eaee9145b596ab6385c38ffd8ce7b13f
@@ -129,9 +120,7 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 # RUN . /install-extension.sh a1111-sd-webui-tagcomplete https://github.com/DominikDoom/a1111-sd-webui-tagcomplete 894335f1dead68cf82ae147d3e53b37abe8fb597
 # RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
-RUN <<EOF
-python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
-EOF
+RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion
 WORKDIR ${ROOT}
