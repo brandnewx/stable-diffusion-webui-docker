@@ -37,7 +37,7 @@ ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
 RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
-RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
+RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
 
 RUN <<EOF
