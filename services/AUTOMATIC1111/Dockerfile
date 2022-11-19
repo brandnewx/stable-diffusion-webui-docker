@@ -71,7 +71,7 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   python3 setup.py bdist_wheel
 
 
-FROM pytorch-ubuntu22
+FROM cuda-pytorch-ubuntu22
 
 USER root
 WORKDIR /
