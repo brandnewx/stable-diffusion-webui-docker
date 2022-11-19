@@ -110,7 +110,7 @@ CMD [ "/bin/bash" ]
 FROM python3ubuntu
 
 USER root
-WORKDIR /root
+WORKDIR /stable-diffusion-webui
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
