@@ -30,7 +30,7 @@ services:
     build: ./services/AUTOMATIC1111
     image: sd-auto:16
     environment:
-      - CLI_ARGS=--allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
+      - CLI_ARGS=--allow-code --medvram --opt-split-attention --enable-insecure-extension-access --administrator
       
   auto-dreambooth:
     <<: *automatic
