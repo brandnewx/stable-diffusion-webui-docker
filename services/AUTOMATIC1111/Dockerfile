@@ -41,6 +41,16 @@ RUN apt-get update -qq && apt-get install -yq python3.10 python3-pip && apt-get 
 
 RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
 
+# Install CUDA libs (some libs like bitandbytes need CUDA to compile).
+ENV cudnn_version=8.5.0.96
+ENV cuda_version=cuda11.7
+ENV OS=ubuntu2204
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
+  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
+  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
+  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
+  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
+
 
 FROM pytorch-ubuntu22 as xformers-ubuntu22
 USER root
@@ -111,16 +121,6 @@ COPY . /docker
 RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
   mv  ${ROOT}/style.css ${ROOT}/user.css && \
   sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
-
-# Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
-ENV cudnn_version=8.5.0.96
-ENV cuda_version=cuda11.7
-ENV OS=ubuntu2204
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
-  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
-  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
-  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
-  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 # Install extensions
 RUN <<EOF
