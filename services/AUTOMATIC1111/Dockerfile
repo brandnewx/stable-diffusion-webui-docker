@@ -119,6 +119,8 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
 
+RUN pip install bitsandbytes
+
 # WORKDIR ${ROOT}/repositories/stable-diffusion
 WORKDIR ${ROOT}
 ENV CLI_ARGS=""
