@@ -39,13 +39,13 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
+RUN apt-get update && 
+  apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g /
+    fonts-dejavu-core rsync git jq moreutils && apt-get clean
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update && apt-get install -yq python3.10 python3-pip
 
 RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
-
-RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
-
 
 RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   cd stable-diffusion-webui && \
@@ -94,8 +94,7 @@ RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
 ENV cudnn_version=8.4.1.50
 ENV cuda_version=cuda11.6
 ENV OS=ubuntu2004
-RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget zlib1g && \
-  wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
   mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
   apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
   add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
