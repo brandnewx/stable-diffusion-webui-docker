@@ -88,6 +88,15 @@ mv  ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
+# Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
+RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common && \
+  mkdir -p /etc/apt/keyrings && \
+  add-apt-repository contrib && \
+  apt-key del 7fa2af80 && \
+  wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb && \
+  dpkg -i cuda-keyring_1.0-1_all.deb && \
+  apt-get update && apt-get install -yq cuda
+
 # Install extensions
 RUN <<EOF
 cat <<'EOE' > /install-extension.sh
@@ -109,16 +118,6 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN <<EOF
 python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
-EOF
-
-# Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
-RUN <<EOF
-apt-get update && apt-get install -yq software-properties-common
-add-apt-repository contrib
-apt-key del 7fa2af80
-wget https://developer.download.nvidia.com/compute/cuda/repos/<distro>/<arch>/cuda-keyring_1.0-1_all.deb
-dpkg -i cuda-keyring_1.0-1_all.deb
-apt-get update && apt-get install -yq cuda
 EOF
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion
