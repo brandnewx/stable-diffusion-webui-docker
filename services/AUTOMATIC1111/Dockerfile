@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
 FROM alpine/git:2.36.2 as download
-
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
 RUN <<EOF
@@ -28,29 +27,54 @@ RUN apk add aria2
 RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 
-FROM ubuntu:22.04
+FROM ubuntu:22.04 as pytorch-ubuntu22
+USER root
+WORKDIR /
+SHELL ["/bin/bash", "-ceuxo", "pipefail"]
+
+ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
+
+RUN apt-get update -qq && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common \
+    wget zlib1g git moreutils && apt-get clean
+    
+RUN apt-get update -qq && apt-get install -yq python3.10 python3-pip && apt-get clean
+
+RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+
+
+FROM pytorch-ubuntu22 as xformers-ubuntu22
+USER root
+WORKDIR /
+SHELL ["/bin/bash", "-ceuxo", "pipefail"]
+
+RUN git clone https://github.com/facebookresearch/xformers.git && \
+  cd xformers && \
+  git submodule update --init --recursive && \
+  python3 -m venv venv && \
+  ./venv/scripts/activate && \
+  pip install -r requirements.txt && \
+  pip install wheel && \
+  set NVCC_FLAGS=--allow-unsupported-compiler && \
+  python setup.py build && \
+  python setup.py bdist_wheel
+
+
+FROM pytorch-ubuntu22
 
 USER root
 WORKDIR /
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
-
-RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common \
-    wget zlib1g fonts-dejavu-core rsync git jq moreutils && apt-get clean
-
-RUN apt-get update && apt-get install -yq python3.10 python3-pip && apt-get clean
-
-RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
+RUN apt-get update -qq && apt-get install -yq fonts-dejavu-core rsync git jq moreutils && apt-get clean
 
 RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   cd stable-diffusion-webui && \
   # git reset --hard 284cf8f322110df0920ec022937d0ebfe9a61550 && \
   pip install -r requirements_versions.txt
 
-# COPY --from=xformers /wheel.whl xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
-# RUN pip install xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl && rm xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl
+COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers
+# RUN pip install /xxformers.whl && rm xformers.whl
 
 
 ENV ROOT=/stable-diffusion-webui
