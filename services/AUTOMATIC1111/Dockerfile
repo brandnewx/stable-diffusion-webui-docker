@@ -88,10 +88,9 @@ mv  ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
-
 # Install CUDA libs (some libs like bitandbytes need CUDA toolkit to compile).
-ENV cudnn_version=8.4.1.50
-ENV cuda_version=cuda11.6
+ENV cudnn_version=8.6.0.163
+ENV cuda_version=cuda11.8
 RUN apt-get update && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common wget && \
   mkdir -p /etc/apt/keyrings && \
   add-apt-repository contrib && \
