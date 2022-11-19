@@ -109,6 +109,9 @@ CMD [ "/bin/bash" ]
 # FROM nvcr.io/nvidia/pytorch:22.09-py3
 FROM python3ubuntu
 
+USER root
+WORKDIR /root
+
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
