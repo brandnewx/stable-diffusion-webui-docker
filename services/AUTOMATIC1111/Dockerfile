@@ -113,7 +113,12 @@ EOF
 
 # Install CUDA toolkit (some libs like bitandbytes need CUDA toolkit to compile).
 RUN <<EOF
-apt-get update && apt-get install -yq nvidia-cuda-toolkit nvidia-cuda-dev
+add-apt-repository contrib
+apt-key del 7fa2af80
+wget https://developer.download.nvidia.com/compute/cuda/repos/<distro>/<arch>/cuda-keyring_1.0-1_all.deb
+dpkg -i cuda-keyring_1.0-1_all.deb
+apt-get update
+apt-get install -yq cuda
 EOF
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion
