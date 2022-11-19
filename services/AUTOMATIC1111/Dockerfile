@@ -116,7 +116,9 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && apt-get install -yq python3.10
+RUN apt-get update && apt-get install -yq python3.10 python3-pip && \
+  rm /usr/bin/python3 && ln -sf /usr/bin/python3.10 /usr/bin/python3 && \
+  rm /usr/bin/pip && ln -sf /usr/bin/pip3 /usr/bin/pip
 
 RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
