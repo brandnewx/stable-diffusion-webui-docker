@@ -84,7 +84,7 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
-  pip install wheel ninja triton
+  pip install wheel==0.38.4 ninja==1.11.1 triton==1.1.1
 RUN export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 RUN cd /xformers && python3 setup.py build
 RUN cd /xformers && python3 setup.py bdist_wheel
@@ -118,7 +118,7 @@ RUN pip install -r ${ROOT}/repositories/CodeFormer/requirements.txt
 ARG DEEPDANBOORU="0"
 RUN [[ "${DEEPDANBOORU:-0}" == "0" ]] && : || pip install tensorflow-cpu==2.10 tensorflow-io==0.27.0 git+https://github.com/KichangKim/DeepDanbooru.git@edf73df4cdaeea2cf00e9ac08bd8a9026b7a7b26#egg=deepdanbooru
 
-RUN pip install opencv-python-headless \
+RUN pip install opencv-python-headless==4.6.0.66 \
   git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379 \
   git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1 \
   pyngrok
@@ -133,7 +133,7 @@ RUN cd stable-diffusion-webui && \
   git reset --hard && \
   pip install -r requirements_versions.txt
 
-RUN pip install opencv-python-headless triton
+RUN pip install triton=1.1.1
 
 COPY . /docker
 
@@ -163,7 +163,7 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator
 
-RUN pip install bitsandbytes
+RUN pip install bitsandbytes==0.35.4
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion
 WORKDIR ${ROOT}
