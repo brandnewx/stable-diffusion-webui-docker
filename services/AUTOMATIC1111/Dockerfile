@@ -57,8 +57,8 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ARG FORCE_CUDA=1
-ARG TORCH_CUDA_ARCH_LIST="YOUR_GPUs_CC+PTX"  # to fix out of index error in torch/utils/cpp_extension.py
+ENV FORCE_CUDA=1
+ENV TORCH_CUDA_ARCH_LIST="YOUR_GPUs_CC+PTX"  # to fix out of index error in torch/utils/cpp_extension.py
 ARG XFORMERS_SHA=1d31a3ac3b11f40fde7f00aa64debb0fd4d6f376
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
