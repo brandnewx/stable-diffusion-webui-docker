@@ -57,7 +57,7 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ENV FORCE_CUDA=1
+ENV FORCE_CUDA="1"
 
 # to fix out of index error in torch/utils/cpp_extension.py
 ENV TORCH_CUDA_ARCH_LIST="YOUR_GPUs_CC+PTX" 
