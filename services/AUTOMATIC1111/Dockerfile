@@ -22,10 +22,6 @@ RUN . /clone.sh BLIP https://github.com/salesforce/BLIP.git 48211a1594f1321b00f1
 RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042ca0da89c14d1dd59d73883280f8fce991
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
-# FROM alpine:3 as xformers
-# RUN apk add aria2
-# RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
-
 
 FROM nvcr.io/nvidia/cuda:11.7.0-devel-ubuntu22.04 as cuda-pytorch-ubuntu22
 USER root
@@ -40,16 +36,6 @@ RUN apt-get update -qq && apt-get install -yq apt-transport-https ca-certificate
 RUN apt-get update -qq && apt-get install -yq python3.10 python3-pip && apt-get clean
 
 RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
-
-# Install CUDA libs (some libs like bitandbytes need CUDA to compile).
-#ENV cudnn_version=8.5.0.96
-#ENV cuda_version=cuda11.7
-#ENV OS=ubuntu2204
-#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/cuda-${OS}.pin && \
-#  mv cuda-${OS}.pin /etc/apt/preferences.d/cuda-repository-pin-600 && \
-#  apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/3bf863cc.pub && \
-#  add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS}/x86_64/ /" && \
-#  apt-get update && apt-get install -yq libcudnn8=${cudnn_version}-1+${cuda_version} libcudnn8-dev=${cudnn_version}-1+${cuda_version}
 
 
 FROM cuda-pytorch-ubuntu22 as xformers-ubuntu22
@@ -84,10 +70,13 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
-  pip install wheel==0.38.4 ninja==1.11.1 triton==2.0.0.dev20221117
-RUN export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH
-RUN cd /xformers && python3 setup.py build
-RUN cd /xformers && python3 setup.py bdist_wheel
+  pip install wheel==0.38.4 ninja==1.11.1 triton==2.0.0.dev20221117 && \
+  export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH && \
+  cd /xformers && python3 setup.py build && \
+  cd /xformers && python3 setup.py bdist_wheel && \
+  mv /xformers/dist /tmp/xformers/dist && \
+  rm -rf /xformers && \
+  mv /tmp/xformers/dist /xformers/dist
 
 
 FROM cuda-pytorch-ubuntu22
@@ -117,7 +106,7 @@ RUN [[ "${DEEPDANBOORU:-0}" == "0" ]] && : || pip install tensorflow-cpu==2.10 t
 RUN pip install opencv-python-headless==4.6.0.66 \
   git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379 \
   git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1 \
-  pyngrok
+  pyngrok==5.1.0
 
 # Note: don't update the sha of previous versions because the install will take forever
 # instead, update the repo state in a later step
