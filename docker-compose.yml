@@ -7,7 +7,7 @@ x-base_service: &base_service
       - &v1 ./data:/data
       - &v2 /richfast-jfs/sd/output:/output
       - &v3 /richfast-jfs/sd/input:/input
-      - &v4 ./data/dreambooth:/stable-diffusion-webui/models/dreambooth
+      - &v4 ./data-dreambooth:/stable-diffusion-webui/models/dreambooth
     deploy:
       resources:
         reservations:
