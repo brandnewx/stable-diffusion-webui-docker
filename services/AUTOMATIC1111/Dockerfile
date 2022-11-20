@@ -57,9 +57,6 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-# No need to install gcc as xformers will use nvcc for cuda
-# RUN apt-get update -qq && apt-get install -yq linux-headers-$(uname -r) build-essential && apt-get clean
-
 # to fix out of index error in torch/utils/cpp_extension.py
 ENV FORCE_CUDA=1
 ENV USE_CUDA=1
@@ -68,20 +65,19 @@ ENV USE_CUDA=1
 ENV TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
 
 # Torch build env variables
-ENV USE_OPENCV=1
-ENV BUILD_TORCH=ON
-ENV CMAKE_PREFIX_PATH="/usr/bin/"
-ENV CUDA_BIN_PATH=/usr/local/cuda/bin
-ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
-ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
-ENV CUDA_HOST_COMPILER=cc
-ENV USE_NNPACK=1
-ENV CC=cc
-ENV CXX=c++
-#ENV TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX"
-ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
+#ENV USE_OPENCV=1
+#ENV BUILD_TORCH=ON
+#ENV CMAKE_PREFIX_PATH="/usr/bin/"
+#ENV CUDA_BIN_PATH=/usr/local/cuda/bin
+#ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
+#ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
+#ENV CUDA_HOST_COMPILER=cc
+#ENV USE_NNPACK=1
+#ENV CC=cc
+#ENV CXX=c++
+#ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
-ARG XFORMERS_SHA=1d31a3ac3b11f40fde7f00aa64debb0fd4d6f376
+ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git fetch && \
