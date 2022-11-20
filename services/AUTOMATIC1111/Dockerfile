@@ -150,7 +150,7 @@ COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers/dist/
 RUN pip uninstall xformers && pip install /xformers/dist/*.whl && rm -rf /xformers
 
 # Test initial run to install additional files.
-RUN pip uninstall bitsandbytes && pip install bitsandbytes==0.35.4
+RUN pip uninstall bitsandbytes && pip install bitsandbytes==0.35.0
 RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion
