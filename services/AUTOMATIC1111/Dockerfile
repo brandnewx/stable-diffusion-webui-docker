@@ -61,7 +61,7 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 ENV FORCE_CUDA=1
 ENV USE_CUDA=1
 
-# set to compile for CUDA 1.17 for T4 and A100 (see https://developer.nvidia.com/cuda-gpus#compute)
+# set to compile for T4 and A100 (see https://developer.nvidia.com/cuda-gpus#compute)
 ENV TORCH_CUDA_ARCH_LIST="7.5 8.0+PTX"
 
 # Torch build env variables
@@ -106,7 +106,7 @@ RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   pip install -r requirements_versions.txt
 
 COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers
-RUN pip install /xformers/xformers-0.0.15.dev0+1d31a3a.d20221119-cp310-cp310-linux_x86_64.whl && rm -rf /xformers
+RUN pip install /*.whl && rm -rf /xformers
 
 ENV ROOT=/stable-diffusion-webui
 
