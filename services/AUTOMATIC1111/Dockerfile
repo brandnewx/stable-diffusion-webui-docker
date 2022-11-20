@@ -57,6 +57,9 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
+# No need to install gcc as xformers will use nvcc for cuda
+# RUN apt-get update -qq && apt-get install -yq linux-headers-$(uname -r) build-essential && apt-get clean
+
 # to fix out of index error in torch/utils/cpp_extension.py
 ENV FORCE_CUDA=1
 ENV USE_CUDA=1
