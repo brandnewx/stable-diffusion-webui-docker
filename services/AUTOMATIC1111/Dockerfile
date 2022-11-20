@@ -105,8 +105,8 @@ RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   # git reset --hard 284cf8f322110df0920ec022937d0ebfe9a61550 && \
   pip install -r requirements_versions.txt
 
-COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers
-RUN pip install /*.whl && rm -rf /xformers
+COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers/dist/
+RUN pip install /xformers/dist/*.whl && rm -rf /xformers
 
 ENV ROOT=/stable-diffusion-webui
 
