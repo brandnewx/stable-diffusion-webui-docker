@@ -22,9 +22,9 @@ RUN . /clone.sh BLIP https://github.com/salesforce/BLIP.git 48211a1594f1321b00f1
 RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042ca0da89c14d1dd59d73883280f8fce991
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
-FROM alpine:3 as xformers
-RUN apk add aria2
-RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
+# FROM alpine:3 as xformers
+# RUN apk add aria2
+# RUN aria2c --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/2.1.0/xformers-0.0.14.dev0-cp310-cp310-linux_x86_64.whl'
 
 
 FROM nvcr.io/nvidia/cuda:11.7.0-devel-ubuntu22.04 as cuda-pytorch-ubuntu22
@@ -65,7 +65,7 @@ ENV FORCE_CUDA=1
 ENV USE_CUDA=1
 
 # set to compile for T4 and A100 (see https://developer.nvidia.com/cuda-gpus#compute)
-ENV TORCH_CUDA_ARCH_LIST="7.5 8.0+PTX"
+ENV TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
 
 # Torch build env variables
 ENV USE_OPENCV=1
