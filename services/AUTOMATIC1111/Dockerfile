@@ -47,7 +47,7 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 ENV FORCE_CUDA=1
 ENV USE_CUDA=1
 
-# set to compile for T4 and A100 (see https://developer.nvidia.com/cuda-gpus#compute)
+# set to compile for Nvidia T, A, RTX (see https://developer.nvidia.com/cuda-gpus#compute)
 ENV TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
 
 # Torch build env variables
