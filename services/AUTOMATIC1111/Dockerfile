@@ -57,10 +57,26 @@ USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ENV FORCE_CUDA="1"
-
 # to fix out of index error in torch/utils/cpp_extension.py
-ENV TORCH_CUDA_ARCH_LIST="YOUR_GPUs_CC+PTX" 
+ENV FORCE_CUDA=1
+ENV USE_CUDA=1
+
+# set to compile for CUDA 1.17 for T4 and A100 (see https://developer.nvidia.com/cuda-gpus#compute)
+ENV TORCH_CUDA_ARCH_LIST="7.5 8.0+PTX"
+
+# Torch build env variables
+ENV USE_OPENCV=1
+ENV BUILD_TORCH=ON
+ENV CMAKE_PREFIX_PATH="/usr/bin/"
+ENV CUDA_BIN_PATH=/usr/local/cuda/bin
+ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
+ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
+ENV CUDA_HOST_COMPILER=cc
+ENV USE_NNPACK=1
+ENV CC=cc
+ENV CXX=c++
+#ENV TORCH_CUDA_ARCH_LIST="3.5 5.2 6.0 6.1+PTX"
+ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
 ARG XFORMERS_SHA=1d31a3ac3b11f40fde7f00aa64debb0fd4d6f376
 RUN git clone https://github.com/facebookresearch/xformers.git && \
@@ -69,7 +85,8 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
-  pip install wheel
+  pip install wheel ninja
+RUN export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 RUN cd /xformers && python3 setup.py build
 RUN cd /xformers && python3 setup.py bdist_wheel
 
