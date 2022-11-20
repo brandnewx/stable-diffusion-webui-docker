@@ -74,9 +74,7 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH && \
   cd /xformers && python3 setup.py build && \
   cd /xformers && python3 setup.py bdist_wheel && \
-  mv /xformers/dist /tmp/xformers/dist && \
-  rm -rf /xformers && \
-  mv /tmp/xformers/dist /xformers/dist
+  mkdir -p /tmp/xformers && mv /xformers/dist /tmp/xformers/dist && rm -rf /xformers/* && mv /tmp/xformers/dist /xformers/dist
 
 
 FROM cuda-pytorch-ubuntu22
