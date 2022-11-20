@@ -129,7 +129,7 @@ RUN cd stable-diffusion-webui && \
   git reset --hard && \
   pip install -r requirements_versions.txt
 
-RUN pip install triton=1.1.1
+RUN pip install triton==1.1.1
 
 COPY . /docker
 
