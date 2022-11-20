@@ -84,7 +84,7 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
-  pip install wheel ninja
+  pip install wheel ninja triton
 RUN export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 RUN cd /xformers && python3 setup.py build
 RUN cd /xformers && python3 setup.py bdist_wheel
@@ -133,7 +133,7 @@ RUN cd stable-diffusion-webui && \
   git reset --hard && \
   pip install -r requirements_versions.txt
 
-RUN pip install opencv-python-headless
+RUN pip install opencv-python-headless triton
 
 COPY . /docker
 
