@@ -84,7 +84,7 @@ RUN git clone https://github.com/facebookresearch/xformers.git && \
   git reset --hard ${XFORMERS_SHA} && \
   git submodule update --init --recursive && \
   pip install -r requirements.txt && \
-  pip install wheel==0.38.4 ninja==1.11.1 triton==1.1.1
+  pip install wheel==0.38.4 ninja==1.11.1 triton==2.0.0.dev20221117
 RUN export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH
 RUN cd /xformers && python3 setup.py build
 RUN cd /xformers && python3 setup.py bdist_wheel
@@ -129,7 +129,7 @@ RUN cd stable-diffusion-webui && \
   git reset --hard && \
   pip install -r requirements_versions.txt
 
-RUN pip install triton==1.1.1
+RUN pip install triton==2.0.0.dev20221117
 
 COPY . /docker
 
