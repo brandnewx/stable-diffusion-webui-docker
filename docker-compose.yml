@@ -27,7 +27,7 @@ services:
 
   auto-t4:
     <<: *base_service
-    profiles: ["auto"]
+    profiles: ["auto-t4"]
     build: ./services/AUTOMATIC1111
     image: sd-auto:16
     environment:
@@ -35,7 +35,7 @@ services:
       
   auto: &automatic
     <<: *base_service
-    profiles: ["autoa100"]
+    profiles: ["auto"]
     build: ./services/AUTOMATIC1111
     image: sd-auto:16
     environment:
