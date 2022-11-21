@@ -25,7 +25,7 @@ services:
     volumes:
       - *v1
 
-  auto: &automatic
+  auto-t4:
     <<: *base_service
     profiles: ["auto"]
     build: ./services/AUTOMATIC1111
@@ -33,7 +33,7 @@ services:
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
-  autoa100:
+  auto: &automatic
     <<: *base_service
     profiles: ["autoa100"]
     build: ./services/AUTOMATIC1111
