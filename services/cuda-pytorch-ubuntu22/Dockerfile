@@ -6,8 +6,6 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 ENV TZ=Asia/Phnom_Penh
 
-ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
-
 # set to compile for Nvidia T, A, RTX (see https://developer.nvidia.com/cuda-gpus#compute)
 ENV TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
 
