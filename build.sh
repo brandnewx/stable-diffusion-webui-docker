@@ -20,4 +20,4 @@ fi
 echo "building brandnewx/automatic1111:t4"
 docker build --pull -t brandnewx/automatic1111:t4 ./services/AUTOMATIC1111/
 
-[[ $? != 0 ]] && echo "Error!" && return 14
+[[ $? != 0 ]] && echo "Error!" && return 14\
