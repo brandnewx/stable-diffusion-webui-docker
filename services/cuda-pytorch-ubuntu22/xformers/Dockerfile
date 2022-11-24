@@ -1,4 +1,4 @@
-FROM brandnewx/ubuntu22:cuda-pytorch
+FROM ubuntu22:cuda-pytorch
 USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
