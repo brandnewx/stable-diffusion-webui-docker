@@ -8,10 +8,10 @@ docker build -t brandnewx/ubuntu22:cuda-pytorch ./services/ubuntu22-cuda-pytorch
 smi=$(nvidia-smi)
 if [[ $smi == *"A100"* ]]; then
   echo "building brandnewx/xformers:a100 ..."
-  docker build -t ubuntu22:xformers:a100 -f Dockerfile.a100 ./services/xformers
+  docker build -t ubuntu22:xformers:a100 -f ./services/xformers/Dockerfile.a100 ./services/xformers
 elif [[ $smi == *"T4"* ]]; then
   echo "building brandnewx/xformers:t4 ..."
-  docker build -t brandnewx/xformers:t4 -f Dockerfile.t4 ./services/xformers
+  docker build -t brandnewx/xformers:t4 -f ./services/xformers/Dockerfile.t4 ./services/xformers
 else
   echo "skipped building xformers as current gpu is not supported!"
 fi
