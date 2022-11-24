@@ -28,16 +28,14 @@ services:
   auto-t4:
     <<: *base_service
     profiles: ["auto-t4"]
-    build: ./services/AUTOMATIC1111
-    image: sd-auto:16
+    image: brandnewx/automatic1111
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
   auto: &automatic
     <<: *base_service
     profiles: ["auto"]
-    build: ./services/AUTOMATIC1111
-    image: sd-auto:16
+    image: brandnewx/automatic1111
     environment:
       - CLI_ARGS=--allow-code --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
