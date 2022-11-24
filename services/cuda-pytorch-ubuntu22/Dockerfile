@@ -72,8 +72,8 @@ ENV USE_CUDA=1
 RUN git clone https://github.com/facebookresearch/xformers.git && \
   cd xformers && \
   git fetch && \
+  git submodule update --init --recursive && \
   git reset --hard ${XFORMERS_SHA} && \
-#  git submodule update --init --recursive && \
   pip install -r requirements.txt && \
   pip install wheel==0.38.4 ninja==1.11.1 triton==2.0.0.dev20221117 && \
   export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH && \
