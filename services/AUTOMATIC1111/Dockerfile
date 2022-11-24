@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM alpine/git:2.36.2 as download
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
