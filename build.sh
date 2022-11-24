@@ -9,7 +9,7 @@ smi=$(nvidia-smi)
 if [[ $smi == *"A100"* ]]; then
   echo "building ubuntu22:cuda-pytorch-xformers-a100..."
   docker build --pull --build-arg TORCH_CUDA_ARCH_LIST="8.0+PTX" -t brandnewx/ubuntu22:cuda-pytorch-xformers-a100 ./services/cuda-pytorch-ubuntu22/xformers/ # && docker push brandnewx/ubuntu22:cuda-pytorch-xformers-a100
-else if [[ $smi == *"T4"* ]]; then
+elif [[ $smi == *"T4"* ]]; then
   echo "building ubuntu22:cuda-pytorch-xformers-t4"
   docker build --pull --build-arg TORCH_CUDA_ARCH_LIST="7.5+PTX" -t brandnewx/ubuntu22:cuda-pytorch-xformers-t4 ./services/cuda-pytorch-ubuntu22/xformers/ # && docker push brandnewx/ubuntu22:cuda-pytorch-xformers-t4
 else
