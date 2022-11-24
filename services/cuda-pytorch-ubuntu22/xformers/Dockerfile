@@ -5,6 +5,9 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
 
+# set to compile for Nvidia T, A, RTX (see https://developer.nvidia.com/cuda-gpus#compute)
+ARG TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
+
 # to fix out of index error in torch/utils/cpp_extension.py
 ENV FORCE_CUDA=1
 ENV USE_CUDA=1
