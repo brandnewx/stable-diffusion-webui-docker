@@ -1,4 +1,4 @@
-FROM ubuntu22:cuda-pytorch as brandnewx/xformers-t4
+FROM ubuntu22:cuda-pytorch
 USER root
 WORKDIR /
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
