@@ -23,7 +23,7 @@ RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
 
-FROM brandnewx/ubuntu22:cuda-pytorch-xformers-t4
+FROM brandnewx/ubuntu22:cuda-pytorch
 
 USER root
 WORKDIR /
@@ -90,6 +90,10 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 # RUN . /install-extension.sh a1111-sd-webui-tagcomplete https://github.com/DominikDoom/a1111-sd-webui-tagcomplete 894335f1dead68cf82ae147d3e53b37abe8fb597
 # RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
+
+# Copy xformers
+COPY --from=brandnewx/xformers-t4 /xformers-t4 /xformers/t4
+COPY --from=brandnewx/xformers-a100 /xformers-a100 /xformers/a100
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
