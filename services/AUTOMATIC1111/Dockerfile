@@ -23,61 +23,7 @@ RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
 
-FROM nvcr.io/nvidia/cuda:11.7.0-devel-ubuntu22.04 as cuda-pytorch-ubuntu22
-USER root
-WORKDIR /
-SHELL ["/bin/bash", "-ceuxo", "pipefail"]
-
-ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
-
-RUN apt-get update -qq && apt-get install -yq apt-transport-https ca-certificates curl gnupg gnupg2 lsb-release software-properties-common \
-    wget zlib1g git moreutils && apt-get clean
-    
-RUN apt-get update -qq && apt-get install -yq python3.10 python3-pip && apt-get clean
-
-RUN pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 --extra-index-url https://download.pytorch.org/whl/cu117
-
-
-FROM cuda-pytorch-ubuntu22 as xformers-ubuntu22
-USER root
-WORKDIR /
-SHELL ["/bin/bash", "-ceuxo", "pipefail"]
-
-# to fix out of index error in torch/utils/cpp_extension.py
-ENV FORCE_CUDA=1
-ENV USE_CUDA=1
-
-# set to compile for Nvidia T, A, RTX (see https://developer.nvidia.com/cuda-gpus#compute)
-ENV TORCH_CUDA_ARCH_LIST="7.5 8.0 8.6+PTX"
-
-# Torch build env variables
-#ENV USE_OPENCV=1
-#ENV BUILD_TORCH=ON
-#ENV CMAKE_PREFIX_PATH="/usr/bin/"
-#ENV CUDA_BIN_PATH=/usr/local/cuda/bin
-#ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
-#ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
-#ENV CUDA_HOST_COMPILER=cc
-#ENV USE_NNPACK=1
-#ENV CC=cc
-#ENV CXX=c++
-#ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
-
-ARG XFORMERS_SHA=103e863db94f712a96c34fc8e78cfd58a40adeee
-RUN git clone https://github.com/facebookresearch/xformers.git && \
-  cd xformers && \
-  git fetch && \
-  git reset --hard ${XFORMERS_SHA} && \
-  git submodule update --init --recursive && \
-  pip install -r requirements.txt && \
-  pip install wheel==0.38.4 ninja==1.11.1 triton==2.0.0.dev20221117 && \
-  export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/lib:$LD_LIBRARY_PATH && \
-  cd /xformers && python3 setup.py build && \
-  cd /xformers && python3 setup.py bdist_wheel && \
-  mkdir -p /tmp/xformers && mv /xformers/dist /tmp/xformers/dist && rm -rf /xformers/* && mv /tmp/xformers/dist /xformers/dist
-
-
-FROM cuda-pytorch-ubuntu22
+FROM brandnewx/ubuntu22:cuda-pytorch
 
 USER root
 WORKDIR /
@@ -144,10 +90,6 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 # RUN . /install-extension.sh a1111-sd-webui-tagcomplete https://github.com/DominikDoom/a1111-sd-webui-tagcomplete 894335f1dead68cf82ae147d3e53b37abe8fb597
 # RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
-
-# Install xformers last and get rid of any incompatabible xformers
-COPY --from=xformers-ubuntu22 /xformers/dist/ /xformers/dist/
-RUN pip uninstall xformers --yes && pip install /xformers/dist/*.whl && rm -rf /xformers
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
