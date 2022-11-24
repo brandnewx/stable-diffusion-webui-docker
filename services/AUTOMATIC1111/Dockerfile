@@ -3,9 +3,11 @@
 FROM alpine/git:2.36.2 as download
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
-RUN cat <<'EOE' > /clone.sh
+RUN <<EOF
+cat <<'EOE' > /clone.sh
 mkdir -p repositories/"$1" && cd repositories/"$1" && git init && git remote add origin "$2" && git fetch origin "$3" --depth=1 && git reset --hard "$3" && rm -rf .git
 EOE
+EOF
 
 RUN . /clone.sh taming-transformers https://github.com/CompVis/taming-transformers.git 24268930bf1dce879235a7fddd0b2355b84d7ea6 \
   && rm -rf data assets **/*.ipynb
