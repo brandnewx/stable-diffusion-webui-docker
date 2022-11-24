@@ -23,7 +23,7 @@ RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 60e5042
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
 
-FROM brandnewx/ubuntu22:cuda-pytorch
+FROM brandnewx/ubuntu22:cuda-pytorch-xformers-t4
 
 USER root
 WORKDIR /
