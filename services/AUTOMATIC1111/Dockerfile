@@ -92,8 +92,8 @@ RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github
 RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
 
 # Copy xformers
-COPY --from=brandnewx/xformers:t4 /xformers-t4 /xformers/t4
-COPY --from=brandnewx/xformers:a100 /xformers-a100 /xformers/a100
+COPY --from=brandnewx/xformers:t4 /xformers-dist /xformers-dist
+RUN pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
