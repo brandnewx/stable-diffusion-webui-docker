@@ -4,7 +4,7 @@ echo "building brandnewx/ubuntu:cuda-pytorch..."
 docker build -t brandnewx/ubuntu22:cuda-pytorch ./services/ubuntu22-cuda-pytorch/
 [[ $? != 0 ]] && echo "Error!" && return 13
 
-docker build -t brandnewx/xformers ./services/xformers && docker push 
+docker build -t brandnewx/xformers ./services/xformers 
 [[ $? != 0 ]] && echo "Error!" && return 14
 
 ## set to compile xformers for different nvidia computes (see https://developer.nvidia.com/cuda-gpus#compute)
