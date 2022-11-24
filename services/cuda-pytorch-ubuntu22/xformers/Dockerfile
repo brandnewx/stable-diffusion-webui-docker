@@ -13,17 +13,17 @@ ENV FORCE_CUDA=1
 ENV USE_CUDA=1
 
 # Torch build env variables
-#ENV USE_OPENCV=1
-#ENV BUILD_TORCH=ON
-#ENV CMAKE_PREFIX_PATH="/usr/bin/"
-#ENV CUDA_BIN_PATH=/usr/local/cuda/bin
-#ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
-#ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
-#ENV CUDA_HOST_COMPILER=cc
-#ENV USE_NNPACK=1
-#ENV CC=cc
-#ENV CXX=c++
-#ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
+ENV USE_OPENCV=1
+ENV BUILD_TORCH=ON
+ENV CMAKE_PREFIX_PATH="/usr/bin/"
+ENV CUDA_BIN_PATH=/usr/local/cuda/bin
+ENV CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda/
+ENV CUDNN_LIB_DIR=/usr/local/cuda/lib64
+ENV CUDA_HOST_COMPILER=cc
+ENV USE_NNPACK=1
+ENV CC=cc
+ENV CXX=c++
+ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 
 # Compile and install xformers
 RUN git clone https://github.com/facebookresearch/xformers.git && \
