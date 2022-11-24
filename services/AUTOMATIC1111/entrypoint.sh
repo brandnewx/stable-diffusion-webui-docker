@@ -2,6 +2,18 @@
 
 set -Eeuo pipefail
 
+# Install xformers for the GPU
+smi=$(nvidia-smi)
+if [[ $smi == *"A100"* ]]; then
+  echo "Installing xformers for A100..."
+  pip install /xformers/a100/*.whl
+elif [[ $smi == *"T4"* ]]; then
+  echo "Installing xformers for T4..."
+  pip install /xformers/t4/*.whl
+else
+  echo "Did not install xformers as GPU is not supported"
+fi
+
 # TODO: move all mkdir -p ?
 mkdir -p /data/config/auto/scripts/
 cp -n /docker/config.json /data/config/auto/config.json
