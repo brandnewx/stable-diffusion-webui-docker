@@ -93,7 +93,7 @@ RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7e
 
 # Copy xformers
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-RUN pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
