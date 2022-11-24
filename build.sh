@@ -21,5 +21,5 @@ docker build -t brandnewx/xformers ./services/xformers
 #[[ $? != 0 ]] && echo "Error!" && return 14
 
 echo "building automatic1111"
-docker build -t brandnewx/automatic1111 ./services/AUTOMATIC1111/
+docker buildx -t brandnewx/automatic1111 ./services/AUTOMATIC1111/
 [[ $? != 0 ]] && echo "Error!" && return 15
