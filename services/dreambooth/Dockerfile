@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM brandnewx/ubuntu22:cuda-pytorch
 USER root
 WORKDIR /
