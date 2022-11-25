@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 #FROM brandnewx/ubuntu22:cuda-pytorch
-FROM brandnewx/ubuntu22:base
+FROM brandnewx/ubuntu22:full
 USER root
 WORKDIR /
 
