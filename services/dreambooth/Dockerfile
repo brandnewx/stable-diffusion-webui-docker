@@ -1,14 +1,56 @@
 # syntax=docker/dockerfile:1
 
-#FROM brandnewx/ubuntu22:cuda-pytorch
-FROM brandnewx/ubuntu22:full
+FROM brandnewx/ubuntu22:full as download
 USER root
 WORKDIR /
 
 ARG HF_TOKEN
 ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
 ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
-ARG CKPT_PATH
+
+RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
+
+# Download SD 1.5
+RUN <<EOF
+if [ -z "${HF_TOKEN}" ]; then
+    echo "HF_TOKEN not specified."
+    return 1
+fi
+
+echo "Downloading SD model (Unet and Text Encoder)..."
+mkdir /content/model
+cd /content/model
+git init
+git lfs install --system --skip-repo
+git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
+git config core.sparsecheckout true
+echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
+git pull origin main
+if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
+    echo "Make sure you accepted the terms in https://huggingface.co/${HF_SD_REPO}"
+    return 1
+fi
+
+# Optionally download and replace VAE
+if [ ! -z "${HF_VAE_REPO}" ]; then
+    echo "Downloading alternative VAE..."
+    rm -rf /content/model/vae
+    mkdir -p /content/model/vae
+    cd /content/model/vae
+    git clone "https://USER:${HF_TOKEN}@huggingface.co/${HF_VAE_REPO}" .
+    rm -r ./.git
+fi
+if [ ! -f "/content/model/vae/diffusion_pytorch_model.bin" ]; then
+    echo "VAE model is missing!"
+    return 1
+fi
+EOF
+
+
+#FROM brandnewx/ubuntu22:cuda-pytorch
+FROM brandnewx/ubuntu22:full
+USER root
+WORKDIR /
 
 ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
     HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
@@ -43,48 +85,14 @@ RUN pip install triton==2.0.0.dev20221117 \
   accelerate==0.12.0 \
   omegaconf==2.2.3
 
+# Copy default model
+COPY --from=download /content/model /content/model
+
 # Install xformers
 #COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 #RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
-# Download SD 1.5
-RUN <<EOF
-if [ ! -z "${HF_TOKEN}" ]; then
-    echo "Downloading SD 1.5 model (Unet and Text Encoder)..."
-    mkdir /content/model
-    cd /content/model
-    git init
-    git lfs install --system --skip-repo
-    git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
-    git config core.sparsecheckout true
-    echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
-    git pull origin main
 
-    if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
-        echo "Make sure you accepted the terms in https://huggingface.co/${HF_SD_REPO}"
-        return 1
-    fi
-
-    if [ ! -z "${HF_VAE_REPO}" ]; then
-        echo "Downloading SD 1.5 VAE..."
-        mkdir -p /content/model/vae
-        cd /content/model/vae
-        git clone "https://USER:${HF_TOKEN}@huggingface.co/${HF_VAE_REPO}" .
-        rm -r ./.git
-    fi
-else
-    echo "HF_TOKEN not specified. Skipped downloading SD model."
-
-    if [ ! -z "${CKPT_PATH}" ]; then
-        python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/model
-        if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
-            echo "Conversion error, Insufficient RAM or corrupt CKPT, use a 4.7GB CKPT instead of 7GB"
-            return 1
-        fi
-    fi
-fi
-
-EOF
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
