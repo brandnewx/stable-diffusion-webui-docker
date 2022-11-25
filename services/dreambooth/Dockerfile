@@ -1,28 +1,39 @@
 # syntax=docker/dockerfile:1
 
+ARG HF_TOKEN="" \
+    HF_REPO="runwayml/stable-diffusion-v1-5" \
+    CKPT_PATH=""
+
 #FROM brandnewx/ubuntu22:cuda-pytorch
 FROM brandnewx/ubuntu22:base
 USER root
 WORKDIR /
 
-ARG HF_TOKEN=""
-ARG CKPT_PATH=""
+ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
+    HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 RUN <<EOF
-  echo "Installing Diffusers libraries..."
-  mkdir -p /content/hf-diffusers
-  cd /content/hf-diffusers
-  git clone https://github.com/huggingface/diffusers .
-  rm -rf ./.git
-  python3 -u setup.py install
+#  echo "Installing Diffusers libraries..."
+#  mkdir -p /content/hf-diffusers
+#  cd /content/hf-diffusers
+#  git clone https://github.com/huggingface/diffusers .
+#  git reset --hard ${HF_DIFFUSERS_COMMIT}
+#  python3 -u setup.py install
+#  rm -rf ./.git
 
-  mkdir -p /content/diffusers
-  cd /content/diffusers
-  git clone https://github.com/TheLastBen/diffusers .
-  git reset --hard ac2141e9ad5b470c95567472adad186fbf254228
-  python3 -u setup.py install
+    mkdir -p /content/hf-diffusers/scripts
+    cd /content/hf-diffusers/scripts
+    wget https://raw.githubusercontent.com/huggingface/diffusers/${HF_DIFFUSERS_COMMIT}/scripts/convert_original_stable_diffusion_to_diffusers.py
+    wget https://raw.githubusercontent.com/huggingface/diffusers/${HF_DIFFUSERS_COMMIT}/scripts/convert_diffusers_to_original_stable_diffusion.py
+
+    mkdir -p /content/diffusers
+    cd /content/diffusers
+    git clone https://github.com/TheLastBen/diffusers .
+    git reset --hard ${THELASTBEN_DIFFUSERS_COMMIT}
+    python3 -u setup.py install
+    rm -rf ./.git
 EOF
 
 RUN pip install triton==2.0.0.dev20221117 \
@@ -41,12 +52,12 @@ if [ $HF_TOKEN != "" ]; then
     cd /content/model
     git init
     git lfs install --system --skip-repo
-    git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/runwayml/stable-diffusion-v1-5"
+    git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_REPO}"
     git config core.sparsecheckout true
     echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
     git pull origin main
     if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
-        echo 'Make sure you accepted the terms in https://huggingface.co/runwayml/stable-diffusion-v1-5'
+        echo "Make sure you accepted the terms in https://huggingface.co/${HF_REPO}"
         return 1
     fi
 
