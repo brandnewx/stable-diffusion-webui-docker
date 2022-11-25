@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG HF_TOKEN=""
+ARG HF_TOKEN
 ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
 ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
 ARG CKPT_PATH=""
