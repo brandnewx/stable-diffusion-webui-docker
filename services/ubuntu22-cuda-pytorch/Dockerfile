@@ -29,6 +29,7 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends \
     cifs-utils \
     ruby \
     file \
+    dumb-init \
     cron \
     rsyslog \
     rsync \
