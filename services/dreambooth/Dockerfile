@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1
 
 ARG HF_TOKEN="" \
-    HF_REPO="runwayml/stable-diffusion-v1-5" \
+    HF_SD_REPO="runwayml/stable-diffusion-v1-5" \
+    HF_VAE_REPO="stabilityai/sd-vae-ft-mse" \
     CKPT_PATH=""
 
 #FROM brandnewx/ubuntu22:cuda-pytorch
@@ -46,46 +47,47 @@ RUN pip install triton==2.0.0.dev20221117 \
 
 # Download SD 1.5
 RUN <<EOF
-if [ $HF_TOKEN != "" ]; then
+if [ "${HF_TOKEN}" != "" ]; then
     echo "Downloading SD 1.5 model (Unet and Text Encoder)..."
     mkdir /content/model
     cd /content/model
     git init
     git lfs install --system --skip-repo
-    git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_REPO}"
+    git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
     git config core.sparsecheckout true
     echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
     git pull origin main
+
     if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
-        echo "Make sure you accepted the terms in https://huggingface.co/${HF_REPO}"
+        echo "Make sure you accepted the terms in https://huggingface.co/${HF_SD_REPO}"
         return 1
     fi
 
-    echo "Downloading SD 1.5 VAE..."
-    mkdir -p /content/model/vae
-    cd /content/model/vae
-    git clone "https://USER:${HF_TOKEN}@huggingface.co/stabilityai/sd-vae-ft-mse" .
-    rm -r ./.git
+    if [ "${HF_VAE_REPO}" ]; then
+        echo "Downloading SD 1.5 VAE..."
+        mkdir -p /content/model/vae
+        cd /content/model/vae
+        git clone "https://USER:${HF_TOKEN}@huggingface.co/${HF_VAE_REPO}" .
+        rm -r ./.git
+    fi
 else
     echo "HF_TOKEN not specified. Skipped downloading SD model."
-fi
 
-if [ ${CKPT_PATH} != "" ]; then
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/model
-    if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
-        echo "Conversion error, Insufficient RAM or corrupt CKPT, use a 4.7GB CKPT instead of 7GB"
-        return 1
+    if [ "${CKPT_PATH}" != "" ]; then
+        python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/model
+        if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
+            echo "Conversion error, Insufficient RAM or corrupt CKPT, use a 4.7GB CKPT instead of 7GB"
+            return 1
+        fi
     fi
 fi
+
 EOF
 
 # Test initial run to install additional files.
 RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
 
-# WORKDIR ${ROOT}/repositories/stable-diffusion
-WORKDIR ${ROOT}
-ENV CLI_ARGS=""
+WORKDIR /
 EXPOSE 7860
-ENTRYPOINT ["/docker/entrypoint.sh"]
-# run, -u to not buffer stdout / stderr
-CMD python3 -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}
+ENTRYPOINT ["entrypoint.sh"]
+CMD python3 --version
