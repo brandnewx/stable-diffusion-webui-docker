@@ -47,7 +47,7 @@ RUN pip install triton==2.0.0.dev20221117 \
 
 # Download SD 1.5
 RUN <<EOF
-if [ "${HF_TOKEN}" != "" ]; then
+if [ ! -z "${HF_TOKEN}" ]; then
     echo "Downloading SD 1.5 model (Unet and Text Encoder)..."
     mkdir /content/model
     cd /content/model
@@ -63,7 +63,7 @@ if [ "${HF_TOKEN}" != "" ]; then
         return 1
     fi
 
-    if [ "${HF_VAE_REPO}" ]; then
+    if [ ! -z "${HF_VAE_REPO}" ]; then
         echo "Downloading SD 1.5 VAE..."
         mkdir -p /content/model/vae
         cd /content/model/vae
@@ -73,7 +73,7 @@ if [ "${HF_TOKEN}" != "" ]; then
 else
     echo "HF_TOKEN not specified. Skipped downloading SD model."
 
-    if [ "${CKPT_PATH}" != "" ]; then
+    if [ ! -z "${CKPT_PATH}" ]; then
         python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/model
         if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
             echo "Conversion error, Insufficient RAM or corrupt CKPT, use a 4.7GB CKPT instead of 7GB"
