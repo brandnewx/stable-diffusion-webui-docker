@@ -16,13 +16,13 @@ RUN <<EOF
   cd /content/hf-diffusers
   git clone https://github.com/huggingface/diffusers .
   rm -rf ./.git
-  python3 -u setup.py
+  python3 -u setup.py install
 
   mkdir -p /content/diffusers
   cd /content/diffusers
   git clone https://github.com/TheLastBen/diffusers .
   git reset --hard ac2141e9ad5b470c95567472adad186fbf254228
-  python3 -u setup.py
+  python3 -u setup.py install
 EOF
 
 RUN pip install triton==2.0.0.dev20221117 \
