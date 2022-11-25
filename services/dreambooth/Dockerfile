@@ -15,6 +15,8 @@ ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
+RUN apt-get update -q && apt-get install git git-lfs && apt-get clean
+
 RUN <<EOF
 #  echo "Installing Diffusers libraries..."
 #  mkdir -p /content/hf-diffusers
