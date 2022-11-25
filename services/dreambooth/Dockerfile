@@ -1,14 +1,14 @@
 # syntax=docker/dockerfile:1
 
-ARG HF_TOKEN
-ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
-ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
-ARG CKPT_PATH
-
 #FROM brandnewx/ubuntu22:cuda-pytorch
 FROM brandnewx/ubuntu22:base
 USER root
 WORKDIR /
+
+ARG HF_TOKEN
+ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
+ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
+ARG CKPT_PATH
 
 ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
     HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
