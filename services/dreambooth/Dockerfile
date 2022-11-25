@@ -3,7 +3,7 @@
 ARG HF_TOKEN
 ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
 ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
-ARG CKPT_PATH=""
+ARG CKPT_PATH
 
 #FROM brandnewx/ubuntu22:cuda-pytorch
 FROM brandnewx/ubuntu22:base
