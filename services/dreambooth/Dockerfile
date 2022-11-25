@@ -34,22 +34,22 @@ RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /
 RUN <<EOF
 if [ $HF_TOKEN != "" ]; then
     echo "Downloading SD 1.5 model (Unet and Text Encoder)..."
-    mkdir /content/stable-diffusion-v1-5
-    cd /content/stable-diffusion-v1-5
+    mkdir /content/model
+    cd /content/model
     git init
     git lfs install --system --skip-repo
     git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/runwayml/stable-diffusion-v1-5"
     git config core.sparsecheckout true
     echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
     git pull origin main
-    if [ ! -f '/content/stable-diffusion-v1-5/unet/diffusion_pytorch_model.bin' ]; then
-    echo 'Make sure you accepted the terms in https://huggingface.co/runwayml/stable-diffusion-v1-5'
-    return 1
+    if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
+        echo 'Make sure you accepted the terms in https://huggingface.co/runwayml/stable-diffusion-v1-5'
+        return 1
     fi
 
     echo "Downloading SD 1.5 VAE..."
-    mkdir -p /content/stable-diffusion-v1-5/vae
-    cd /content/stable-diffusion-v1-5/vae
+    mkdir -p /content/model/vae
+    cd /content/model/vae
     git clone "https://USER:${HF_TOKEN}@huggingface.co/stabilityai/sd-vae-ft-mse" .
     rm -r ./.git
 else
@@ -57,8 +57,8 @@ else
 fi
 
 if [ ${CKPT_PATH} != "" ]; then
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/stable-diffusion-v1-5
-    if [ ! -f '/content/stable-diffusion-v1-5/unet/diffusion_pytorch_model.bin' ]; then
+    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${CKPT_Path}" --dump_path /content/model
+    if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
         echo "Conversion error, Insufficient RAM or corrupt CKPT, use a 4.7GB CKPT instead of 7GB"
         return 1
     fi
