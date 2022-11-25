@@ -24,7 +24,7 @@ git init
 git lfs install --system --skip-repo
 git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
 git config core.sparsecheckout true
-echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nmodel_index.json" > .git/info/sparse-checkout
+echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
 git pull origin main
 if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
     echo "Make sure you accepted the terms in https://huggingface.co/${HF_SD_REPO}"
@@ -81,9 +81,13 @@ RUN <<EOF
     rm -rf ./.git
 EOF
 
-RUN pip install triton==2.0.0.dev20221117 \
-  accelerate==0.12.0 \
-  omegaconf==2.2.3
+RUN <<EOF
+pip install triton==2.0.0.dev20221117 \
+    accelerate==0.12.0 \
+    omegaconf==2.2.3
+pip uninstall bitsandbytes --yes
+pip install bitsandbytes==0.35.0
+EOF
 
 # Copy default model
 COPY --from=download /content/model /content/model
@@ -91,11 +95,6 @@ COPY --from=download /content/model /content/model
 # Install xformers
 #COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 #RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
-
-
-
-# Test initial run to install additional files.
-RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
 
 WORKDIR /
 EXPOSE 7860
