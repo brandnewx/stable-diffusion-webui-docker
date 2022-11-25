@@ -18,19 +18,24 @@ if [ -z "${HF_TOKEN}" ]; then
 fi
 
 echo "Downloading SD model (Unet and Text Encoder)..."
-mkdir /content/model
+mkdir -p /content/model
 cd /content/model
-git init
+git init .
 git lfs install --system --skip-repo
 git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
 git config core.sparsecheckout true
 echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
 git pull origin main
+EOF
+
+RUN <<EOF
 if [ ! -f '/content/model/unet/diffusion_pytorch_model.bin' ]; then
     echo "Make sure you accepted the terms in https://huggingface.co/${HF_SD_REPO}"
-    return 1
+    return 2
 fi
+EOF
 
+RUN <<EOF
 # Optionally download and replace VAE
 if [ ! -z "${HF_VAE_REPO}" ]; then
     echo "Downloading alternative VAE..."
@@ -40,9 +45,12 @@ if [ ! -z "${HF_VAE_REPO}" ]; then
     git clone "https://USER:${HF_TOKEN}@huggingface.co/${HF_VAE_REPO}" .
     rm -r ./.git
 fi
+EOF
+
+RUN <<EOF
 if [ ! -f "/content/model/vae/diffusion_pytorch_model.bin" ]; then
     echo "VAE model is missing!"
-    return 1
+    return 3
 fi
 EOF
 
