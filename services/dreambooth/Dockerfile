@@ -30,8 +30,8 @@ RUN pip install triton==2.0.0.dev20221117 \
   omegaconf==2.2.3
 
 # Install xformers
-COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+#COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
+#RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Download SD 1.5
 RUN <<EOF
