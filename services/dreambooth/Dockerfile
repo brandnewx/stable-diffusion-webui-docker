@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 
-ARG HF_TOKEN="" \
-    HF_SD_REPO="runwayml/stable-diffusion-v1-5" \
-    HF_VAE_REPO="stabilityai/sd-vae-ft-mse" \
-    CKPT_PATH=""
+ARG HF_TOKEN=""
+ARG HF_SD_REPO="runwayml/stable-diffusion-v1-5"
+ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse" 
+ARG CKPT_PATH=""
 
 #FROM brandnewx/ubuntu22:cuda-pytorch
 FROM brandnewx/ubuntu22:base
