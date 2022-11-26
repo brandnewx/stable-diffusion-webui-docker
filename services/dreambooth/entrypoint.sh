@@ -67,6 +67,6 @@ echo "Starting Dreambooth training..."
 echo "Saving final CKPT..."
 FINAL_CKPT="${SESSION_DIR}/${SESSION_NAME}.ckpt"
 rm -f "${FINAL_CKPT}"
-python /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
+python3 /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
 #exec "$@"
