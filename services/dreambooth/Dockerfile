@@ -64,7 +64,7 @@ USER root
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 WORKDIR /
 
-ENV THELASTBEN_DIFFUSERS_COMMIT=c252abbe47639f44ec0c302b4b470394a061d4f8 \
+ENV THELASTBEN_DIFFUSERS_COMMIT=b89ee3e2a2904c94df131fa3ee8833e5e2e05aae \
     HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
 RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
