@@ -30,6 +30,9 @@ if [ ! -f "${UNET_FILE}" ]; then
     wget -O "${MODEL_DOWNLOADED}" ${MODEL_PATH} || exit 210
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_DOWNLOADED}" --dump_path "${SESSION_MODEL_DIR}"
     rm -f "${MODEL_DOWNLOADED}"
+  else
+    echo "Invalid MODEL_PATH: ${MODEL_PATH}"
+    exit 215
   fi
   if [ ! -f "${UNET_FILE}" ]; then
     echo "Unable to find the model!"
