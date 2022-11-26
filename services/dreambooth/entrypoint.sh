@@ -45,6 +45,8 @@ fi
 mkdir -p "$OUTPUT_DIR"
 
 echo "Starting Dreambooth training..."
+echo "INSTANCE_DIR: $INSTANCE_DIR"
+echo "SESSION_MODEL_DIR: $SESSION_MODEL_DIR"
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename
   --train_text_encoder
