@@ -2,10 +2,10 @@
 
 set -Eeuo pipefail
 
-[[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && exit 110 
-#[[ -z "$TEXTENCODER_STEPS" ]] && echo "TEXTENCODER_STEPS not specified" && exit 120
-[[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && exit 130
-[[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && exit 140
+[ -z "$INSTANCE_DIR" ] && echo "INSTANCE_DIR not specified" && exit 110 
+#[ -z "$TEXTENCODER_STEPS" ] && echo "TEXTENCODER_STEPS not specified" && exit 120
+[ -z "$MODEL_NAME" ] && echo "MODEL_NAME not specified" && exit 130
+[ -z "$OUTPUT_DIR" ] && echo "OUTPUT_DIR not specified" && exit 140
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -13,12 +13,12 @@ SESSION_MODEL_DIR="${SESSION_DIR}/model"
 UNET_FILE="${SESSION_MODEL_DIR}/unet/diffusion_pytorch_model.bin"
 MODEL_DOWNLOADED="${SESSION_MODEL_DIR}/downloaded.ckpt"
 
-if [[ ! -f "${UNET_FILE}" ]]; then
-  echo "Creating new session..."
+if [ ! -f "${UNET_FILE}" ]; then
+  echo "Creating new session for ${MODEL_NAME}..."
   mkdir -p "${SESSION_DIR}"
   rm -rf "${SESSION_MODEL_DIR}"
   mkdir -p "${SESSION_MODEL_DIR}"
-  if [[ -z "${MODEL_PATH}" ]]; then
+  if [ -z "${MODEL_PATH}" ]; then
     echo "Using the default model..."
     cp -r "/content/model" "${SESSION_MODEL_DIR}"
   elif [[ "${MODEL_PATH}" = "/"* ]]; then
@@ -31,7 +31,7 @@ if [[ ! -f "${UNET_FILE}" ]]; then
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_DOWNLOADED}" --dump_path "${SESSION_MODEL_DIR}"
     rm -f "${MODEL_DOWNLOADED}"
   fi
-  if [[ ! -f "${UNET_FILE}" ]]; then
+  if [ ! -f "${UNET_FILE}" ]; then
     echo "Unable to find the model!"
     exit 220
   fi
