@@ -46,8 +46,8 @@ services:
     image: brandnewx/dreambooth
     restart: "no"
     environment:
-      - INSTANCE_DIR=/input/skssks
-      - MODEL_NAME=sksks
+#      - INSTANCE_DIR=/input/skssks
+#      - MODEL_NAME=sksks
       - OUTPUT_DIR=/dreambooth-output
       - MODEL_PATH=""
       
