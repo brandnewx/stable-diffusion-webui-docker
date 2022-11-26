@@ -2,10 +2,10 @@
 
 set -Eeuo pipefail
 
-[ -z "$INSTANCE_DIR" ] && echo "INSTANCE_DIR not specified" && exit 110 
-#[ -z "$TEXTENCODER_STEPS" ] && echo "TEXTENCODER_STEPS not specified" && exit 120
-[ -z "$MODEL_NAME" ] && echo "MODEL_NAME not specified" && exit 130
-[ -z "$OUTPUT_DIR" ] && echo "OUTPUT_DIR not specified" && exit 140
+[ -z $INSTANCE_DIR ] && echo "INSTANCE_DIR not specified" && exit 110 
+#[ -z $TEXTENCODER_STEPS ] && echo "TEXTENCODER_STEPS not specified" && exit 120
+[ -z $MODEL_NAME ] && echo "MODEL_NAME not specified" && exit 130
+[ -z $OUTPUT_DIR ] && echo "OUTPUT_DIR not specified" && exit 140
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -18,7 +18,7 @@ if [ ! -f "${UNET_FILE}" ]; then
   mkdir -p "${SESSION_DIR}"
   rm -rf "${SESSION_MODEL_DIR}"
   mkdir -p "${SESSION_MODEL_DIR}"
-  if [ -z "${MODEL_PATH}" ]; then
+  if [ -z $MODEL_PATH ]; then
     echo "Using the default model..."
     cp -r "/content/model" "${SESSION_MODEL_DIR}"
   elif [[ "${MODEL_PATH}" = "/"* ]]; then
