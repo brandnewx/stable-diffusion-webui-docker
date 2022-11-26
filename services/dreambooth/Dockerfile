@@ -107,7 +107,7 @@ COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Install Dreambooth
-RUN pip install -r /content/diffusers/examples/dreamboth/requirements.txt
+RUN pip install -r /content/diffusers/examples/dreambooth/requirements.txt
 
 WORKDIR /
 
