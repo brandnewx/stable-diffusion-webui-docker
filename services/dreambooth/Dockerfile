@@ -11,7 +11,7 @@ ARG HF_VAE_REPO="stabilityai/sd-vae-ft-mse"
 
 RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
 
-# Download SD 1.5
+# Download model
 RUN <<EOF
 if [ -z "${HF_TOKEN}" ]; then
     echo "HF_TOKEN not specified."
@@ -27,6 +27,7 @@ git remote add -f origin "https://USER:${HF_TOKEN}@huggingface.co/${HF_SD_REPO}"
 git config core.sparsecheckout true
 echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
 git pull origin main
+rm -rf ./.git
 EOF
 
 RUN <<EOF
@@ -44,7 +45,7 @@ if [ ! -z "${HF_VAE_REPO}" ]; then
     mkdir -p /content/model/vae
     cd /content/model/vae
     git clone "https://USER:${HF_TOKEN}@huggingface.co/${HF_VAE_REPO}" .
-    rm -r ./.git
+    rm -rf ./.git
 fi
 EOF
 
