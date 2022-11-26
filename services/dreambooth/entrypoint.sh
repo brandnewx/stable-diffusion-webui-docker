@@ -2,10 +2,10 @@
 
 set -Eeuo pipefail
 
-[[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && return 110 
-#[[ -z "$TEXTENCODER_STEPS" ]] && echo "TEXTENCODER_STEPS not specified" && return 120
-[[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && return 130
-[[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && return 140
+[[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && exit 110 
+#[[ -z "$TEXTENCODER_STEPS" ]] && echo "TEXTENCODER_STEPS not specified" && exit 120
+[[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && exit 130
+[[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && exit 140
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -27,13 +27,13 @@ if [[ ! -f "${UNET_FILE}" ]]; then
   elif [[ "${MODEL_PATH}" = "http"* ]]; then
     echo "Downloading model from ${MODEL_PATH}"
     rm -f "${MODEL_DOWNLOADED}"
-    wget -O "${MODEL_DOWNLOADED}" ${MODEL_PATH} || return 210
+    wget -O "${MODEL_DOWNLOADED}" ${MODEL_PATH} || exit 210
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_DOWNLOADED}" --dump_path "${SESSION_MODEL_DIR}"
     rm -f "${MODEL_DOWNLOADED}"
   fi
   if [[ ! -f "${UNET_FILE}" ]]; then
     echo "Unable to find the model!"
-    return 220
+    exit 220
   fi
 else
   echo "Resuming previous session..."
