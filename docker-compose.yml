@@ -49,6 +49,7 @@ services:
       - INSTANCE_DIR=/input/skssks
       - MODEL_NAME=sksks
       - OUTPUT_DIR=/dreambooth-output
+      - MODEL_PATH=""
       
   auto-cpu:
     <<: *automatic
