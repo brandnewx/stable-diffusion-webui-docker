@@ -9,7 +9,7 @@ set -Eeuo pipefail
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
-SESSION_MODEL_DIR="${SESSION_DIR}/model"
+SESSION_MODEL_DIR="${SESSION_DIR}"
 UNET_FILE="${SESSION_MODEL_DIR}/unet/diffusion_pytorch_model.bin"
 MODEL_DOWNLOADED="${SESSION_MODEL_DIR}/downloaded.ckpt"
 
@@ -23,7 +23,7 @@ if [ ! -f "$UNET_FILE" ]; then
     rsync -avhq "/content/model/" "${SESSION_DIR}/"
   elif [[ "$MODEL_PATH" = "/"* ]]; then
     echo "Using model at ${MODEL_PATH}"
-    python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "${SESSION_MODEL_DIR}"
+    python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_MODEL_DIR"
   elif [[ "$MODEL_PATH" = "http"* ]]; then
     echo "Downloading model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
@@ -74,6 +74,6 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
 echo "Saving final CKPT..."
 FINAL_CKPT="${SESSION_DIR}/${MODEL_NAME}.ckpt"
 rm -f "${FINAL_CKPT}"
-python3 /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
+python3 -u /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
 #exec "$@"
