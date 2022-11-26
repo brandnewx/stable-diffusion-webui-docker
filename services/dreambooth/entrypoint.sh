@@ -72,7 +72,7 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --max_train_steps=2000
 
 echo "Saving final CKPT..."
-FINAL_CKPT="${SESSION_DIR}/${SESSION_NAME}.ckpt"
+FINAL_CKPT="${SESSION_DIR}/${MODEL_NAME}.ckpt"
 rm -f "${FINAL_CKPT}"
 python3 /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
