@@ -28,6 +28,7 @@ if [[ ! -f "${MODEL_FILE}" ]]; then
     rm -f "${MODEL_DOWNLOADED}"
     wget -O "${MODEL_DOWNLOADED}" ${MODEL_PATH} || return 13
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_DOWNLOADED}" --dump_path "${WORKING_MODEL_DIR}"
+    rm -f "${MODEL_DOWNLOADED}"
   fi
   if [[ ! -f "${MODEL_FILE}" ]]; then
     echo "Unable to find the base model!"
