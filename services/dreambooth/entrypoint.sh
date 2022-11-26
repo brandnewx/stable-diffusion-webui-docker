@@ -48,8 +48,8 @@ echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_MODEL_DIR: $SESSION_MODEL_DIR"
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
-  --image_captions_filename
-  --train_text_encoder
+  --image_captions_filename \
+  --train_text_encoder \
   --save_starting_step=1000 \
   --stop_text_encoder_training=500 \
   --save_n_steps=500 \
