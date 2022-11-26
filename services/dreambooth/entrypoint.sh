@@ -39,7 +39,7 @@ if [ ! -f "$UNET_FILE" ]; then
     exit 220
   fi
 else
-  echo "Resuming previous session..."
+  echo "Resuming previous session ${MODEL_NAME}..."
 fi
 
 mkdir -p "$OUTPUT_DIR"
