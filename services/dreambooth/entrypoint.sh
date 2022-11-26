@@ -80,4 +80,11 @@ FINAL_CKPT="${SESSION_DIR}/${MODEL_NAME}_${MAX_TRAIN_STEPS}.ckpt"
 rm -f "${FINAL_CKPT}"
 python3 -u /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
+if [ -f "$FINAL_CKPT" ]; then
+  echo "Successfully saved the trained model to ${FINAL_CKPT}"
+else
+  echo "Failed to save the trained model to ${FINAL_CKPT}"
+  exit 1000
+fi
+
 #exec "$@"
