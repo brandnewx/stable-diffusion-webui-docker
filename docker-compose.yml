@@ -49,7 +49,7 @@ services:
       - INSTANCE_DIR=${INSTANCE_DIR}
       - MODEL_NAME=${MODEL_NAME}
       - OUTPUT_DIR=/dreambooth-output
-      - MODEL_PATH=""
+      - MODEL_PATH=
       
   auto-cpu:
     <<: *automatic
