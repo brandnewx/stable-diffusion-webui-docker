@@ -20,7 +20,7 @@ if [ ! -f "$UNET_FILE" ]; then
   mkdir -p "$SESSION_MODEL_DIR"
   if [ -z "$MODEL_PATH" ]; then
     echo "Using the default model..."
-    cp -r "/content/model" "${SESSION_MODEL_DIR}"
+    cp -r "/content/model" "${SESSION_DIR}/"
   elif [[ "$MODEL_PATH" = "/"* ]]; then
     echo "Using model at ${MODEL_PATH}"
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "${SESSION_MODEL_DIR}"
