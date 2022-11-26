@@ -42,6 +42,7 @@ else
   echo "Resuming previous session ${MODEL_NAME}..."
 fi
 
+rm -f "${SESSION_DIR}/v1-inference.yaml"
 mkdir -p "$OUTPUT_DIR"
 
 echo "Starting Dreambooth training..."
@@ -59,7 +60,7 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --instance_prompt=$MODEL_NAME \
   --seed=1337 \
   --resolution=512 \
-  --mixed_precision=fp16 \
+  --mixed_precision="fp16" \
   --train_batch_size=1 \
   --gradient_accumulation_steps=1 \
   --use_8bit_adam \
