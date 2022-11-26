@@ -20,7 +20,7 @@ if [ ! -f "$UNET_FILE" ]; then
   mkdir -p "$SESSION_MODEL_DIR"
   if [ -z "$MODEL_PATH" ]; then
     echo "Using the default model..."
-    cp -r "/content/model" "${SESSION_DIR}/"
+    rsync -avhq "/content/model/" "${SESSION_DIR}/"
   elif [[ "$MODEL_PATH" = "/"* ]]; then
     echo "Using model at ${MODEL_PATH}"
     python3 -u /content/hf-diffusers/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "${SESSION_MODEL_DIR}"
@@ -51,12 +51,13 @@ echo "SESSION_MODEL_DIR: $SESSION_MODEL_DIR"
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename \
   --train_text_encoder \
-  --save_starting_step=1000 \
+  --save_starting_step=1500 \
   --stop_text_encoder_training=500 \
   --save_n_steps=500 \
   --pretrained_model_name_or_path=$SESSION_MODEL_DIR \
   --instance_data_dir=$INSTANCE_DIR \
   --output_dir=$SESSION_DIR \
+  --Session_dir=$SESSION_DIR \
   --instance_prompt=$MODEL_NAME \
   --seed=1337 \
   --resolution=512 \
