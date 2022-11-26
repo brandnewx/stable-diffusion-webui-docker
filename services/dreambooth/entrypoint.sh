@@ -53,10 +53,10 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --save_starting_step=1000 \
   --stop_text_encoder_training=500 \
   --save_n_steps=500 \
-  --pretrained_model_name_or_path="${SESSION_MODEL_DIR}" \
-  --instance_data_dir="$INSTANCE_DIR" \
-  --output_dir="$SESSION_DIR" \
-  --instance_prompt="$MODEL_NAME" \
+  --pretrained_model_name_or_path=$SESSION_MODEL_DIR \
+  --instance_data_dir=$INSTANCE_DIR \
+  --output_dir=$SESSION_DIR \
+  --instance_prompt=$MODEL_NAME \
   --seed=1337 \
   --resolution=512 \
   --mixed_precision=fp16 \
