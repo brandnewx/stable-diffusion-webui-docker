@@ -1,3 +1,4 @@
 /.devcontainer
 /docker-compose.override.yml
 /build-local.sh
+/*.env
