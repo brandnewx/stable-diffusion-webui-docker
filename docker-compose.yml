@@ -44,7 +44,7 @@ services:
     <<: *base_service
     profiles: ["dreambooth"]
     image: brandnewx/dreambooth
-    restart: never
+    restart: no
     environment:
       - INSTANCE_DIR=/input/skssks
       - MODEL_NAME=sksks
