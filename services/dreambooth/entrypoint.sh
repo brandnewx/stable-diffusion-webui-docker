@@ -40,8 +40,6 @@ else
 fi
 
 mkdir -p "${OUTPUT_DIR}"
-FINAL_CKPT="${SESSION_DIR}/${SESSION_NAME}.ckpt"
-rm -f "${FINAL_CKPT}"
 
 echo "Starting Dreambooth training..."
 !accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
@@ -67,6 +65,8 @@ echo "Starting Dreambooth training..."
   --max_train_steps=2000
 
 echo "Saving final CKPT..."
-
+FINAL_CKPT="${SESSION_DIR}/${SESSION_NAME}.ckpt"
+rm -f "${FINAL_CKPT}"
+python /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
 #exec "$@"
