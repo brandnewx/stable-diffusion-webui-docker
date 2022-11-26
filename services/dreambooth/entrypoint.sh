@@ -82,6 +82,7 @@ python3 -u /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_di
 
 if [ -f "$FINAL_CKPT" ]; then
   echo "Successfully saved the trained model to ${FINAL_CKPT}"
+  exit 0
 else
   echo "Failed to save the trained model to ${FINAL_CKPT}"
   exit 1000
