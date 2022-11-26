@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
-FROM brandnewx/ubuntu22:full as download
+FROM brandnewx/ubuntu22:cuda-pytorch as download
+#FROM brandnewx/ubuntu22:full as download
 USER root
 WORKDIR /
 
@@ -55,8 +56,8 @@ fi
 EOF
 
 
-#FROM brandnewx/ubuntu22:cuda-pytorch
-FROM brandnewx/ubuntu22:full
+FROM brandnewx/ubuntu22:cuda-pytorch
+#FROM brandnewx/ubuntu22:full
 USER root
 WORKDIR /
 
@@ -101,8 +102,8 @@ EOF
 COPY --from=download /content/model /content/model
 
 # Install xformers
-#COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-#RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
+RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 WORKDIR /
 EXPOSE 7860
