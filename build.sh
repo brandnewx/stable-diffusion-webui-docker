@@ -4,7 +4,7 @@ echo "building brandnewx/ubuntu:cuda-pytorch..."
 docker build -t brandnewx/ubuntu22:cuda-pytorch ./services/ubuntu22-cuda-pytorch/ && docker push brandnewx/ubuntu22:cuda-pytorch
 [[ $? != 0 ]] && echo "Error!" && return 13
 
-docker build -t brandnewx/xformers ./services/xformers 
+docker build -t brandnewx/xformers ./services/xformers && docker push brandnewx/xformers:latest
 [[ $? != 0 ]] && echo "Error!" && return 14
 
 echo "building automatic1111"
