@@ -42,7 +42,7 @@ fi
 mkdir -p "${OUTPUT_DIR}"
 
 echo "Starting Dreambooth training..."
-!accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
+accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename
   --train_text_encoder
   --save_starting_step=500 \
