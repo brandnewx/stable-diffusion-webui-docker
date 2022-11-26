@@ -64,7 +64,7 @@ USER root
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 WORKDIR /
 
-ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
+ENV THELASTBEN_DIFFUSERS_COMMIT=c252abbe47639f44ec0c302b4b470394a061d4f8 \
     HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
 RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
@@ -85,7 +85,7 @@ RUN <<EOF
 
     mkdir -p /content/diffusers
     cd /content/diffusers
-    git clone https://github.com/TheLastBen/diffusers .
+    git clone https://github.com/brandnewx/thelastben-diffusers .
     git reset --hard ${THELASTBEN_DIFFUSERS_COMMIT}
     python3 -u setup.py install
     rm -rf ./.git
