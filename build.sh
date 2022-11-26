@@ -10,5 +10,6 @@ docker buildx build -t brandnewx/xformers ./services/xformers
 [[ $? != 0 ]] && echo "Error!" && return 14
 
 echo "building automatic1111"
+#docker buildx build --pull -t brandnewx/automatic1111 ./services/AUTOMATIC1111/ && push brandnewx/automatic1111:latest
 docker buildx build -t brandnewx/automatic1111 ./services/AUTOMATIC1111/
 [[ $? != 0 ]] && echo "Error!" && return 15
