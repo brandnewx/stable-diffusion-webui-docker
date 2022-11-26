@@ -106,6 +106,9 @@ COPY --from=download /content/model /content/model
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
+# Install Dreambooth
+RUN pip install -r /content/diffusers/examples/dreamboth/requirements.txt
+
 WORKDIR /
 
 COPY ./entrypoint.sh /entrypoint.sh
