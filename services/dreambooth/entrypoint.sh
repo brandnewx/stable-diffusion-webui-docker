@@ -72,7 +72,7 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --lr_scheduler="polynomial" \
   --center_crop \
   --lr_warmup_steps=0 \
-  --max_train_steps=$MAX_TRAIN_STEPS
+  --max_train_steps=$MAX_TRAIN_STEPS \
   --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 
 echo "Saving final CKPT..."
