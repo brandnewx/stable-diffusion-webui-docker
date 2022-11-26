@@ -3,6 +3,7 @@
 FROM brandnewx/ubuntu22:cuda-pytorch as download
 #FROM brandnewx/ubuntu22:full as download
 USER root
+SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 WORKDIR /
 
 ARG HF_TOKEN
@@ -60,12 +61,11 @@ EOF
 FROM brandnewx/ubuntu22:cuda-pytorch
 #FROM brandnewx/ubuntu22:full
 USER root
+SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 WORKDIR /
 
 ENV THELASTBEN_DIFFUSERS_COMMIT=ac2141e9ad5b470c95567472adad186fbf254228 \
     HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
-
-SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
 
