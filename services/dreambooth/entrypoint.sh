@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 [[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && return 110 
-[[ -z "$TEXTENCODER_STEPS" ]] && echo "TEXTENCODER_STEPS not specified" && return 120
+#[[ -z "$TEXTENCODER_STEPS" ]] && echo "TEXTENCODER_STEPS not specified" && return 120
 [[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && return 130
 [[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && return 140
 
@@ -45,7 +45,7 @@ echo "Starting Dreambooth training..."
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename
   --train_text_encoder
-  --save_starting_step=500 \
+  --save_starting_step=1000 \
   --stop_text_encoder_training=500 \
   --save_n_steps=500 \
   --pretrained_model_name_or_path="${SESSION_MODEL_DIR}" \
