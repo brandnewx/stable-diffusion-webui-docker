@@ -53,6 +53,7 @@ services:
       - MAX_TRAIN_STEPS=2000
       - TEXT_ENCODER_STEPS=500
       - SEED=1337
+      - KEEP_DIFFUSERS_MODEL=0
       
   auto-cpu:
     <<: *automatic
