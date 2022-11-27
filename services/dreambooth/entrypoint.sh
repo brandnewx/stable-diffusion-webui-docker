@@ -6,7 +6,7 @@ set -Eeuo pipefail
 [[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && exit 130
 [[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && exit 140
 [[ -z $MAX_TRAIN_STEPS || $MAX_TRAIN_STEPS < 500 ]] && MAX_TRAIN_STEPS=500
-[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 500 ]] && TEXT_ENCODER_STEPS=500
+[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 0 ]] && TEXT_ENCODER_STEPS=0
 [[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS
 [[ -z $SEED ]] && SEED=1337
 
