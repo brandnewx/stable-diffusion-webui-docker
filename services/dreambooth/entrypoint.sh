@@ -84,7 +84,7 @@ rm -f "${FINAL_CKPT}"
 python3 -u /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
 
 # Delete diffusers model if no flag to keep it.
-if [[ $KEEP_DIFFUSERS_MODEL == 1 ]]; then
+if [[ $KEEP_DIFFUSERS_MODEL == 0 ]]; then
   find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
   rm -f "${SESSION_DIR}/model_index.json"
   rm -f "${SESSION_DIR}/v1-inference.yaml"
