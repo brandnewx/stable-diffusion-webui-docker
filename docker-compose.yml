@@ -46,14 +46,16 @@ services:
     image: brandnewx/dreambooth
     restart: "no"
     environment:
-      - INSTANCE_DIR=${INSTANCE_DIR}
-      - MODEL_NAME=${MODEL_NAME}
+      - INSTANCE_DIR=${INSTANCE_DIR:-/input/skssks}
+      - MODEL_NAME=${MODEL_NAME:-skssks}
       - OUTPUT_DIR=/dreambooth-output
-      - MODEL_PATH=
-      - MAX_TRAIN_STEPS=2000
-      - TEXT_ENCODER_STEPS=500
-      - SEED=1337
-      - KEEP_DIFFUSERS_MODEL=0
+      - MODEL_PATH=${MODEL_PATH-}
+      - MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS:-2000}
+      - TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS:-500}
+      - SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS:-1500}
+      - SAVE_N_STEPS=${SAVE_N_STEPS:-500}
+      - SEED=${SEED:-1337}
+      - KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL:-0}
       
   auto-cpu:
     <<: *automatic

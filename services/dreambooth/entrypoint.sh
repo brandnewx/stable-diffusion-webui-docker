@@ -9,6 +9,8 @@ set -Eeuo pipefail
 [[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 0 ]] && TEXT_ENCODER_STEPS=0
 [[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS
 [[ -z $SEED ]] && SEED=1337
+[[ -z $SAVE_STARTING_STEPS || $SAVE_STARTING_STEPS < 0 ]] && SAVE_STARTING_STEPS=0
+[[ -z $SAVE_N_STEPS || $SAVE_N_STEPS < 500 ]] && SAVE_N_STEPS=500
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -55,9 +57,9 @@ echo "SESSION_MODEL_DIR: $SESSION_MODEL_DIR"
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename \
   --train_text_encoder \
-  --save_starting_step=1500 \
+  --save_starting_step=$SAVE_STARTING_STEPS \
   --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
-  --save_n_steps=500 \
+  --save_n_steps=$SAVE_N_STEPS \
   --pretrained_model_name_or_path=$SESSION_MODEL_DIR \
   --instance_data_dir=$INSTANCE_DIR \
   --output_dir=$SESSION_DIR \
