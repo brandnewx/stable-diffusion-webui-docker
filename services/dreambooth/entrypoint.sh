@@ -14,33 +14,35 @@ set -Eeuo pipefail
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
-SESSION_MODEL_DIR="${SESSION_DIR}"
-UNET_FILE="${SESSION_MODEL_DIR}/unet/diffusion_pytorch_model.bin"
-MODEL_DOWNLOADED="${SESSION_MODEL_DIR}/downloaded.ckpt"
-
+UNET_FILE="${SESSION_DIR}/unet/diffusion_pytorch_model.bin"
+MODEL_DOWNLOADED="${SESSION_DIR}/downloaded.ckpt"
 
 if [ ! -f "$UNET_FILE" ]; then
   echo "Creating new session for ${MODEL_NAME}..."
   mkdir -p "$SESSION_DIR"
-  rm -rf "$SESSION_MODEL_DIR"
-  mkdir -p "$SESSION_MODEL_DIR"
+  find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
+  rm -f "${SESSION_DIR}/model_index.json"
+  rm -f "${SESSION_DIR}/v1-inference.yaml"
   if [ -z "$MODEL_PATH" ]; then
     echo "Using the default model..."
-    rsync -avhq "/content/model/" "${SESSION_DIR}/"
+    rsync -ahq "/content/model/" "${SESSION_DIR}/"
   elif [[ "$MODEL_PATH" = "/"* ]]; then
     echo "Using model at ${MODEL_PATH}"
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_MODEL_DIR"
+    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
   elif [[ "$MODEL_PATH" = "http"* ]]; then
     echo "Downloading model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
     wget -O "$MODEL_DOWNLOADED" "$MODEL_PATH" || exit 210
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "$MODEL_DOWNLOADED" --dump_path "$SESSION_MODEL_DIR"
+    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "$MODEL_DOWNLOADED" --dump_path "$SESSION_DIR"
     rm -f "$MODEL_DOWNLOADED"
   else
     echo "Invalid MODEL_PATH: ${MODEL_PATH}"
     exit 215
   fi
   if [ ! -f "$UNET_FILE" ]; then
+    find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
+    rm -f "${SESSION_DIR}/model_index.json"
+    rm -f "${SESSION_DIR}/v1-inference.yaml"
     echo "Unable to find the model!"
     exit 220
   fi
@@ -53,14 +55,14 @@ mkdir -p "$OUTPUT_DIR"
 
 echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
-echo "SESSION_MODEL_DIR: $SESSION_MODEL_DIR"
+echo "SESSION_DIR: $SESSION_DIR"
 accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --image_captions_filename \
   --train_text_encoder \
   --save_starting_step=$SAVE_STARTING_STEPS \
   --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
   --save_n_steps=$SAVE_N_STEPS \
-  --pretrained_model_name_or_path=$SESSION_MODEL_DIR \
+  --pretrained_model_name_or_path=$SESSION_DIR \
   --instance_data_dir=$INSTANCE_DIR \
   --output_dir=$SESSION_DIR \
   --Session_dir=$SESSION_DIR \
