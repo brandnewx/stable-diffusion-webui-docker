@@ -56,29 +56,35 @@ mkdir -p "$OUTPUT_DIR"
 echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_DIR: $SESSION_DIR"
-accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
-  --image_captions_filename \
-  --train_text_encoder \
-  --save_starting_step=$SAVE_STARTING_STEPS \
-  --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
-  --save_n_steps=$SAVE_N_STEPS \
-  --pretrained_model_name_or_path=$SESSION_DIR \
-  --instance_data_dir=$INSTANCE_DIR \
-  --output_dir=$SESSION_DIR \
-  --Session_dir=$SESSION_DIR \
-  --instance_prompt=$MODEL_NAME \
-  --seed=$SEED \
-  --resolution=512 \
-  --mixed_precision="fp16" \
-  --train_batch_size=1 \
-  --gradient_accumulation_steps=1 \
-  --use_8bit_adam \
-  --learning_rate=2e-6 \
-  --lr_scheduler="polynomial" \
-  --center_crop \
-  --lr_warmup_steps=0 \
-  --max_train_steps=$MAX_TRAIN_STEPS \
-  --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+accelerate launch \
+  --mixed_precision=fp16 \
+  --num_processes=1 \
+  --num_machines=1 \
+  --num_threads_per_process=$THREADS_COUNT \
+  /content/diffusers/examples/dreambooth/train_dreambooth.py \
+    --image_captions_filename \
+    --train_text_encoder \
+    --save_starting_step=$SAVE_STARTING_STEPS \
+    --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
+    --save_n_steps=$SAVE_N_STEPS \
+    --pretrained_model_name_or_path=$SESSION_DIR \
+    --instance_data_dir=$INSTANCE_DIR \
+    --output_dir=$SESSION_DIR \
+    --Session_dir=$SESSION_DIR \
+    --instance_prompt=$MODEL_NAME \
+    --seed=$SEED \
+    --resolution=512 \
+    --mixed_precision="fp16" \
+    --train_batch_size=1 \
+    --gradient_accumulation_steps=1 \
+    --use_8bit_adam \
+    --learning_rate=2e-6 \
+    --lr_scheduler="polynomial" \
+    --center_crop \
+    --lr_warmup_steps=0 \
+    --max_train_steps=$MAX_TRAIN_STEPS \
+    --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 
 # Delete diffusers model if no flag to keep it.
 if [[ $KEEP_DIFFUSERS_MODEL == 0 ]]; then
