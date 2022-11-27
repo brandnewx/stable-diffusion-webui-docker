@@ -80,25 +80,11 @@ accelerate launch /content/diffusers/examples/dreambooth/train_dreambooth.py \
   --max_train_steps=$MAX_TRAIN_STEPS \
   --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 
-# the dreambooth python script already does it.
-#echo "Saving final CKPT..."
-#FINAL_CKPT="${SESSION_DIR}/${MODEL_NAME}_${MAX_TRAIN_STEPS}.ckpt"
-#rm -f "${FINAL_CKPT}"
-#python3 -u /content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py --model_path "${SESSION_DIR}" --checkpoint_path "${FINAL_CKPT}" --half
-
 # Delete diffusers model if no flag to keep it.
 if [[ $KEEP_DIFFUSERS_MODEL == 0 ]]; then
   find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
   rm -f "${SESSION_DIR}/model_index.json"
   rm -f "${SESSION_DIR}/v1-inference.yaml"
-fi
-
-if [ -f "$FINAL_CKPT" ]; then
-  echo "Successfully saved the trained model to ${FINAL_CKPT}"
-  exit 0
-else
-  echo "Failed to save the trained model to ${FINAL_CKPT}"
-  exit 1000
 fi
 
 #exec "$@"
