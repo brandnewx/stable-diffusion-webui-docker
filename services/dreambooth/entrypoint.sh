@@ -61,7 +61,7 @@ accelerate launch \
   --mixed_precision=fp16 \
   --num_processes=1 \
   --num_machines=1 \
-  --num_threads_per_process=$THREADS_COUNT \
+  --num_cpu_threads_per_process=$THREADS_COUNT \
   /content/diffusers/examples/dreambooth/train_dreambooth.py \
     --image_captions_filename \
     --train_text_encoder \
