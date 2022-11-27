@@ -64,7 +64,14 @@ USER root
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 WORKDIR /
 
-ENV THELASTBEN_DIFFUSERS_COMMIT=508380b9361a2af60d5b9dffb39c895ef4085400
+# Copy default model
+COPY --from=download /content/model /content/model
+
+# Install xformers
+COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
+RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+
+ENV THELASTBEN_DIFFUSERS_COMMIT=ceb810c4225caa822bf84efe13200438a54b7d35
 #ENV THELASTBEN_DIFFUSERS_COMMIT=main
 ENV HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
@@ -102,13 +109,6 @@ pip install triton==2.0.0.dev20221117 \
 pip uninstall bitsandbytes --yes
 pip install bitsandbytes==0.35.0
 EOF
-
-# Copy default model
-COPY --from=download /content/model /content/model
-
-# Install xformers
-COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Install Dreambooth
 RUN pip install -r /content/diffusers/examples/dreambooth/requirements.txt
