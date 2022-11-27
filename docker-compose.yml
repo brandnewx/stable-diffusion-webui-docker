@@ -40,7 +40,7 @@ services:
     environment:
       - CLI_ARGS=--allow-code --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
-  auto: &dreambooth
+  dreambooth: &dreambooth
     <<: *base_service
     profiles: ["dreambooth"]
     image: brandnewx/dreambooth
@@ -50,6 +50,9 @@ services:
       - MODEL_NAME=${MODEL_NAME}
       - OUTPUT_DIR=/dreambooth-output
       - MODEL_PATH=
+      - MAX_TRAIN_STEPS=2000
+      - TEXT_ENCODER_STEPS=500
+      - SEED=1337
       
   auto-cpu:
     <<: *automatic

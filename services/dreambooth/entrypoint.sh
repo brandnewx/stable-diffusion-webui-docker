@@ -2,19 +2,20 @@
 
 set -Eeuo pipefail
 
-[ -z "$INSTANCE_DIR" ] && echo "INSTANCE_DIR not specified" && exit 110 
-#[ -z "$TEXTENCODER_STEPS" ] && echo "TEXTENCODER_STEPS not specified" && exit 120
-[ -z "$MODEL_NAME" ] && echo "MODEL_NAME not specified" && exit 130
-[ -z "$OUTPUT_DIR" ] && echo "OUTPUT_DIR not specified" && exit 140
+[[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && exit 110 
+[[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && exit 130
+[[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && exit 140
+[[ -z $MAX_TRAIN_STEPS || $MAX_TRAIN_STEPS < 500 ]] && MAX_TRAIN_STEPS=500
+[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 500 ]] && TEXT_ENCODER_STEPS=500
+[[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS
+[[ -z $SEED ]] && SEED=1337
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
 SESSION_MODEL_DIR="${SESSION_DIR}"
 UNET_FILE="${SESSION_MODEL_DIR}/unet/diffusion_pytorch_model.bin"
 MODEL_DOWNLOADED="${SESSION_MODEL_DIR}/downloaded.ckpt"
-MAX_TRAIN_STEPS=2000
-TEXT_ENCODER_STEPS=500
-SEED=1337
+
 
 if [ ! -f "$UNET_FILE" ]; then
   echo "Creating new session for ${MODEL_NAME}..."
