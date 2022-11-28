@@ -2,15 +2,29 @@
 
 set -Eeuo pipefail
 
-[[ -z "$INSTANCE_DIR" ]] && echo "INSTANCE_DIR not specified" && exit 110 
-[[ -z "$MODEL_NAME" ]] && echo "MODEL_NAME not specified" && exit 130
-[[ -z "$OUTPUT_DIR" ]] && echo "OUTPUT_DIR not specified" && exit 140
-[[ -z $MAX_TRAIN_STEPS || $MAX_TRAIN_STEPS < 100 ]] && MAX_TRAIN_STEPS=100
-[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 0 ]] && TEXT_ENCODER_STEPS=0
-[[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS && echo "Setting TEXT_ENCODER_STEPS to ${TEXT_ENCODER_STEPS}"
-[[ -z $SEED ]] && SEED=1337
-[[ -z $SAVE_STARTING_STEPS || $SAVE_STARTING_STEPS < 0 ]] && SAVE_STARTING_STEPS=0
-[[ -z $SAVE_N_STEPS || $SAVE_N_STEPS < 100 ]] && SAVE_N_STEPS=100
+THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+
+echo "================== Environment Variables =================="
+echo "MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
+echo "TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
+echo "SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
+echo "SAVE_N_STEPS=${SAVE_N_STEPS}"
+echo "SEED=${SEED}"
+echo "INSTANCE_DIR=${INSTANCE_DIR}"
+echo "MODEL_NAME=${MODEL_NAME}"
+echo "OUTPUT_DIR=${OUTPUT_DIR}"
+echo "MODEL_PATH=${MODEL_PATH}"
+echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
+echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
+echo "THREADS_COUNT=${THREADS_COUNT}"
+echo "==========================================================="
+
+[[ -z $MAX_TRAIN_STEPS || $MAX_TRAIN_STEPS < 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
+[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 0 ]] && TEXT_ENCODER_STEPS=0 && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
+[[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
+[[ -z $SEED ]] && SEED=1337 && echo "Setting SEED=${SEED}"
+[[ -z $SAVE_STARTING_STEPS || $SAVE_STARTING_STEPS < 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
+[[ -z $SAVE_N_STEPS || $SAVE_N_STEPS < 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -56,7 +70,6 @@ mkdir -p "$OUTPUT_DIR"
 echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_DIR: $SESSION_DIR"
-THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 if [[ $TEXT_ENCODER_STEPS > 0 ]]; then
   echo "Starts training with TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
