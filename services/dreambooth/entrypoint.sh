@@ -19,12 +19,12 @@ echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
 echo "THREADS_COUNT=${THREADS_COUNT}"
 echo "==========================================================="
 
-[[ -z $MAX_TRAIN_STEPS || $MAX_TRAIN_STEPS < 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
-[[ -z $TEXT_ENCODER_STEPS || $TEXT_ENCODER_STEPS < 0 ]] && TEXT_ENCODER_STEPS=0 && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
-[[ $TEXT_ENCODER_STEPS > $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
+[[ $MAX_TRAIN_STEPS -lt 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
+[[ $TEXT_ENCODER_STEPS -lt 0 ]] && TEXT_ENCODER_STEPS=0 && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
+[[ $TEXT_ENCODER_STEPS -gt $MAX_TRAIN_STEPS ]] && TEXT_ENCODER_STEPS=$MAX_TRAIN_STEPS && echo "Setting TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
 [[ -z $SEED ]] && SEED=1337 && echo "Setting SEED=${SEED}"
-[[ -z $SAVE_STARTING_STEPS || $SAVE_STARTING_STEPS < 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
-[[ -z $SAVE_N_STEPS || $SAVE_N_STEPS < 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
+[[ $SAVE_STARTING_STEPS -lt 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
+[[ $SAVE_N_STEPS -lt 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -71,7 +71,7 @@ echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_DIR: $SESSION_DIR"
 
-if [[ $TEXT_ENCODER_STEPS > 0 ]]; then
+if [[ $TEXT_ENCODER_STEPS -gt 0 ]]; then
   echo "Starts training with TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
   accelerate launch \
     --mixed_precision=fp16 \
@@ -136,7 +136,7 @@ fi
 
 
 # Delete diffusers model if no flag to keep it.
-if [[ $KEEP_DIFFUSERS_MODEL == 0 ]]; then
+if [[ $KEEP_DIFFUSERS_MODEL -eq 0 ]]; then
   find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
   rm -f "${SESSION_DIR}/model_index.json"
   rm -f "${SESSION_DIR}/v1-inference.yaml"
