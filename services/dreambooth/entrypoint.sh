@@ -17,7 +17,7 @@ echo "OUTPUT_DIR=${OUTPUT_DIR}"
 echo "MODEL_PATH=${MODEL_PATH}"
 echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
-echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
+#echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
 echo "==========================================================="
 
 [[ $MAX_TRAIN_STEPS -lt 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
@@ -76,7 +76,7 @@ dqt='"'
 ARG_TEXT_ENCODER_STEPS="--train_text_encoder "
 [[ $TEXT_ENCODER_STEPS -eq 0 ]] && ARG_TEXT_ENCODER_STEPS=""
 ARG_USE_BITSANDBYTES="--use_8bit_adam "
-[[ $USE_BITSANDBYTES -eq 0 ]] && ARG_USE_BITSANDBYTES=""
+#[[ $USE_BITSANDBYTES -eq 0 ]] && ARG_USE_BITSANDBYTES=""
 
 RUN_TRAINING=$(cat << EOF
 accelerate launch \
