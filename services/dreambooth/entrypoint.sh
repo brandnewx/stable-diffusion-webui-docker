@@ -98,16 +98,16 @@ accelerate launch \
     --instance_prompt=$MODEL_NAME \
     --seed=$SEED \
     --resolution=512 \
-    --mixed_precision=${dqt}fp16${dqt} \
+    --mixed_precision='fp16' \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
     ${ARG_USE_BITSANDBYTES} \
     --learning_rate=2e-6 \
-    --lr_scheduler=${dqt}polynomial${dqt} \
+    --lr_scheduler='polynomial' \
     --center_crop \
     --lr_warmup_steps=0 \
     --max_train_steps=$MAX_TRAIN_STEPS \
-    --diffusers_to_ckpt_script_path=${dqt}/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py${dqt}
+    --diffusers_to_ckpt_script_path='/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py'
 EOF
 )
 
