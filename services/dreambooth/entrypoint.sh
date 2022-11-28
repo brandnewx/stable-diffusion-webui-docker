@@ -98,7 +98,7 @@ accelerate launch \
     --instance_prompt=$MODEL_NAME \
     --seed=$SEED \
     --resolution=512 \
-    --mixed_precision='fp16' \
+    --mixed_precision=fp16 \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
     ${ARG_USE_BITSANDBYTES} \
