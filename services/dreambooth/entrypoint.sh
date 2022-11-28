@@ -114,7 +114,7 @@ accelerate launch \
 EOF
 )
 
-exec $RUN_TRAINING
+eval $RUN_TRAINING
 
 # Delete diffusers model if no flag to keep it.
 if [[ $KEEP_DIFFUSERS_MODEL -eq 0 ]]; then
