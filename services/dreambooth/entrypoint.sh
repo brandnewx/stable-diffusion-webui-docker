@@ -103,7 +103,7 @@ accelerate launch \
     --gradient_accumulation_steps=1 \
     ${ARG_USE_BITSANDBYTES} \
     --learning_rate=2e-6 \
-    --lr_scheduler='polynomial' \
+    --lr_scheduler=polynomial \
     --center_crop \
     --lr_warmup_steps=0 \
     --max_train_steps=$MAX_TRAIN_STEPS \
