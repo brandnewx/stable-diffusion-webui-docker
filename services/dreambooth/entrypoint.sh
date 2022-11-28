@@ -2,7 +2,8 @@
 
 set -Eeuo pipefail
 
-THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
+## Disabled because it's non-deterministic, making models differ when trained on different machines.
+#THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 echo "================== Environment Variables =================="
 echo "MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
@@ -16,9 +17,7 @@ echo "OUTPUT_DIR=${OUTPUT_DIR}"
 echo "MODEL_PATH=${MODEL_PATH}"
 echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
-echo "THREADS_COUNT=${THREADS_COUNT}"
 echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
-echo "TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
 echo "==========================================================="
 
 [[ $MAX_TRAIN_STEPS -lt 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
@@ -27,8 +26,6 @@ echo "==========================================================="
 [[ -z $SEED ]] && SEED=1337 && echo "Setting SEED=${SEED}"
 [[ $SAVE_STARTING_STEPS -lt 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
 [[ $SAVE_N_STEPS -lt 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
-[[ $TRAIN_BATCH_SIZE -lt 1 ]] && TRAIN_BATCH_SIZE=1 && echo "Setting TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
-[[ $TRAIN_BATCH_SIZE -gt 4 ]] && TRAIN_BATCH_SIZE=4 && echo "Setting TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -86,7 +83,7 @@ accelerate launch \
   --mixed_precision=fp16 \
   --num_processes=1 \
   --num_machines=1 \
-  --num_cpu_threads_per_process=$THREADS_COUNT \
+  --num_cpu_threads_per_process=4 \
   /content/diffusers/examples/dreambooth/train_dreambooth.py \
     --image_captions_filename \
     ${ARG_TEXT_ENCODER_STEPS} \
@@ -102,7 +99,7 @@ accelerate launch \
     --seed=$SEED \
     --resolution=512 \
     --mixed_precision=fp16 \
-    --train_batch_size=$TRAIN_BATCH_SIZE \
+    --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
     ${ARG_USE_BITSANDBYTES} \
     --learning_rate=2e-6 \

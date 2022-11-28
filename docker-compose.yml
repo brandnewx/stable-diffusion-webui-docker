@@ -58,7 +58,6 @@ services:
       - KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL:-0}
       - SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS:-0}
       - USE_BITSANDBYTES=${USE_BITSANDBYTES:-1}
-      - TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE:-1}
   auto-cpu:
     <<: *automatic
     profiles: ["auto-cpu"]
