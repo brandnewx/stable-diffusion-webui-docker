@@ -18,6 +18,7 @@ echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
 echo "THREADS_COUNT=${THREADS_COUNT}"
 echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
+echo "TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
 echo "==========================================================="
 
 [[ $MAX_TRAIN_STEPS -lt 100 ]] && MAX_TRAIN_STEPS=100 && echo "Setting MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
@@ -26,6 +27,8 @@ echo "==========================================================="
 [[ -z $SEED ]] && SEED=1337 && echo "Setting SEED=${SEED}"
 [[ $SAVE_STARTING_STEPS -lt 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
 [[ $SAVE_N_STEPS -lt 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
+[[ $TRAIN_BATCH_SIZE -lt 1 ]] && $TRAIN_BATCH_SIZE=1 && echo "Setting TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
+[[ $TRAIN_BATCH_SIZE -gt 4 ]] && $TRAIN_BATCH_SIZE=4 && echo "Setting TRAIN_BATCH_SIZE=${TRAIN_BATCH_SIZE}"
 
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
@@ -99,7 +102,7 @@ accelerate launch \
     --seed=$SEED \
     --resolution=512 \
     --mixed_precision=fp16 \
-    --train_batch_size=1 \
+    --train_batch_size=$TRAIN_BATCH_SIZE \
     --gradient_accumulation_steps=1 \
     ${ARG_USE_BITSANDBYTES} \
     --learning_rate=2e-6 \
@@ -135,7 +138,7 @@ exec $RUN_TRAINING
 #       --seed=$SEED \
 #       --resolution=512 \
 #       --mixed_precision="fp16" \
-#       --train_batch_size=1 \
+#       --train_batch_size=$TRAIN_BATCH_SIZE \
 #       --gradient_accumulation_steps=1 \
 #       --use_8bit_adam \
 #       --learning_rate=2e-6 \
