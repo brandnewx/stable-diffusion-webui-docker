@@ -59,6 +59,7 @@ echo "SESSION_DIR: $SESSION_DIR"
 THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 if [[ $TEXT_ENCODER_STEPS > 0 ]]; then
+  echo "Starts training with TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
   accelerate launch \
     --mixed_precision=fp16 \
     --num_processes=1 \
@@ -89,6 +90,7 @@ if [[ $TEXT_ENCODER_STEPS > 0 ]]; then
       --max_train_steps=$MAX_TRAIN_STEPS \
       --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 else
+  echo "Starts training without training the text encoder. TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
   accelerate launch \
     --mixed_precision=fp16 \
     --num_processes=1 \
