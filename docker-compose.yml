@@ -23,6 +23,7 @@ services:
   download:
     build: ./services/download/
     profiles: ["download"]
+    restart: "no"
     volumes:
       - *v1
 
@@ -30,6 +31,7 @@ services:
     <<: *base_service
     profiles: ["auto-t4"]
     image: brandnewx/automatic1111
+    restart: "always"
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
@@ -37,6 +39,7 @@ services:
     <<: *base_service
     profiles: ["auto"]
     image: brandnewx/automatic1111
+    restart: "always"
     environment:
       - CLI_ARGS=--allow-code --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
       
@@ -62,6 +65,7 @@ services:
     <<: *automatic
     profiles: ["auto-cpu"]
     deploy: {}
+    restart: "always"
     environment:
       - CLI_ARGS=--no-half --precision full
 
@@ -70,6 +74,7 @@ services:
     profiles: ["hlky"]
     build: ./services/hlky/
     image: sd-hlky:8
+    restart: "always"
     environment:
       - CLI_ARGS=--optimized-turbo
       - USE_STREAMLIT=0
@@ -79,6 +84,7 @@ services:
     profiles: ["lstein"]
     build: ./services/lstein/
     image: sd-lstein:6
+    restart: "always"
     environment:
       - PRELOAD=true
       - CLI_ARGS=--max_loaded_models=1
