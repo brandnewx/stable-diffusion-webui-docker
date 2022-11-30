@@ -10,7 +10,7 @@ get_hf_sd_repo () {
   local REPO_URL="https://huggingface.co/${REPO_NAME}"
   [[ ! -z "$HF_TOKEN" ]] && REPO_URL="https://USER:${HF_TOKEN}@huggingface.co/${REPO_NAME}"
   [ -f "${DEST_DIR}/unet/diffusion_pytorch_model.bin" ] && echo "Getting SD model from cache instead..." && return 0
-  mkdir -rf "${DEST_DIR}"
+  rm -rf "${DEST_DIR}"
   mkdir -p "${DEST_DIR}"
   cd "${DEST_DIR}"
   git init .
@@ -27,7 +27,7 @@ get_hf_vae_repo () {
   local DEST_DIR="$2"
   local REPO_URL="https://huggingface.co/${REPO_NAME}"
   [ -f "${DEST_DIR}/diffusion_pytorch_model.bin" ] && echo "Getting VAE model from cache instead..." && return 0
-  mkdir -rf "${DEST_DIR}"
+  rm -rf "${DEST_DIR}"
   mkdir -p "${DEST_DIR}"
   git clone "$REPO_URL" "${DEST_DIR}" || echo "Unable to pull from repo: ${REPO_NAME}" && return 10
   rm -rf "${DEST_DIR}/.git"
