@@ -60,9 +60,9 @@ services:
       - KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL:-0}
       - SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS:-0}
       - CACHE_DIR=${CACHE_DIR:-"/dreambooth-output/.cache"}
-      - HF_TOKEN=${HF_TOKEN:-""}
-      - MODEL_PATH=${MODEL_PATH:-"runwayml/stable-diffusion-v1-5"}
-      - VAE_PATH=${VAE_PATH:-"stabilityai/sd-vae-ft-mse"}
+      - HF_TOKEN=${HF_TOKEN:-}
+      - MODEL_PATH=${MODEL_PATH:-runwayml/stable-diffusion-v1-5}
+      - VAE_PATH=${VAE_PATH:-stabilityai/sd-vae-ft-mse}
       
   auto-cpu:
     <<: *automatic
