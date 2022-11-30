@@ -68,7 +68,7 @@ UNET_FILE="${SESSION_DIR}/unet/diffusion_pytorch_model.bin"
 VAE_FILE="${SESSION_DIR}/vae/diffusion_pytorch_model.bin"
 MODEL_DOWNLOADED="${SESSION_DIR}/downloaded.ckpt"
 
-if [[ ! -f "$UNET_FILE" || !-f "$VAE_FILE" ]]; then
+if [[ ! -f "$UNET_FILE" || ! -f "$VAE_FILE" ]]; then
   echo "Creating new session for ${MODEL_NAME}..."
   mkdir -p "$SESSION_DIR"
   find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
@@ -76,10 +76,10 @@ if [[ ! -f "$UNET_FILE" || !-f "$VAE_FILE" ]]; then
   rm -f "${SESSION_DIR}/v1-inference.yaml"
 
   # Copy SD model from repo or from CKPT file.
-  if [[ $MODEL_PATH = "/"* && $MODEL_PATH = *".ckpt" ]]; then
+  if [[ "$MODEL_PATH" = "/"* && "$MODEL_PATH" = *".ckpt" ]]; then
     echo "Extracting from CKPT model at ${MODEL_PATH}"
     python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
-  elif [[ $MODEL_PATH = "http"* ]]; then
+  elif [[ "$MODEL_PATH" = "http"* ]]; then
     echo "Downloading CKPT model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
     wget -O "$MODEL_DOWNLOADED" "$MODEL_PATH" || exit 210
