@@ -76,10 +76,10 @@ if [[ ! -f "$UNET_FILE" || !-f "$VAE_FILE" ]]; then
   rm -f "${SESSION_DIR}/v1-inference.yaml"
 
   # Copy SD model from repo or from CKPT file.
-  if [[ "$MODEL_PATH" = "/"* && "$MODEL_PATH" = *".ckpt" ]]; then
+  if [[ $MODEL_PATH = "/"* && $MODEL_PATH = *".ckpt" ]]; then
     echo "Extracting from CKPT model at ${MODEL_PATH}"
     python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
-  elif [[ "$MODEL_PATH" = "http"* ]]; then
+  elif [[ $MODEL_PATH = "http"* ]]; then
     echo "Downloading CKPT model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
     wget -O "$MODEL_DOWNLOADED" "$MODEL_PATH" || exit 210
