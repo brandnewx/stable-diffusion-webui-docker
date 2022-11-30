@@ -18,7 +18,7 @@ get_hf_sd_repo () {
   git remote add -f origin "$REPO_URL"
   git config core.sparsecheckout true
   echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
-  git pull origin main
+  git pull origin main || echo "Unable to pull from repo: ${REPO_NAME}" && return 10
   rm -rf ./.git
 }
 
@@ -29,7 +29,7 @@ get_hf_vae_repo () {
   [ -f "${DEST_DIR}/diffusion_pytorch_model.bin" ] && echo "Getting VAE model from cache instead..." && return 0
   mkdir -rf "${DEST_DIR}"
   mkdir -p "${DEST_DIR}"
-  git clone "$REPO_URL" "${DEST_DIR}"
+  git clone "$REPO_URL" "${DEST_DIR}" || echo "Unable to pull from repo: ${REPO_NAME}" && return 10
   rm -rf "${DEST_DIR}/.git"
 }
 
