@@ -52,7 +52,6 @@ services:
       - INSTANCE_DIR=${INSTANCE_DIR:-/input/skssks}
       - MODEL_NAME=${MODEL_NAME:-skssks}
       - OUTPUT_DIR=/dreambooth-output
-      - MODEL_PATH=${MODEL_PATH-}
       - MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS:-2000}
       - TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS:-500}
       - SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS:-1500}
@@ -60,6 +59,10 @@ services:
       - SEED=${SEED:-1337}
       - KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL:-0}
       - SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS:-0}
+      - CACHE_DIR=${CACHE_DIR:-"/dreambooth-output/.cache"}
+      - HF_TOKEN=${HF_TOKEN:-""}
+      - MODEL_PATH=${MODEL_PATH:-"runwayml/stable-diffusion-v1-5"}
+      - VAE_PATH=${VAE_PATH:-"stabilityai/sd-vae-ft-mse"}
       
   auto-cpu:
     <<: *automatic

@@ -2,6 +2,38 @@
 
 set -Eeuo pipefail
 
+
+get_hf_sd_repo () {
+  local REPO_NAME="$1"
+  local DEST_DIR="$2"
+  local HF_TOKEN="$3"
+  local REPO_URL="https://huggingface.co/${REPO_NAME}"
+  [[ ! -z "$HF_TOKEN" ]] && REPO_URL="https://USER:${HF_TOKEN}@huggingface.co/${REPO_NAME}"
+  [ -f "${DEST_DIR}/unet/diffusion_pytorch_model.bin" ] && echo "Getting SD model from cache instead..." && return 0
+  mkdir -rf "${DEST_DIR}"
+  mkdir -p "${DEST_DIR}"
+  cd "${DEST_DIR}"
+  git init .
+  git lfs install --system --skip-repo
+  git remote add -f origin "$REPO_URL"
+  git config core.sparsecheckout true
+  echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
+  git pull origin main
+  rm -rf ./.git
+}
+
+get_hf_vae_repo () {
+  local REPO_NAME="$1"
+  local DEST_DIR="$2"
+  local REPO_URL="https://huggingface.co/${REPO_NAME}"
+  [ -f "${DEST_DIR}/diffusion_pytorch_model.bin" ] && echo "Getting VAE model from cache instead..." && return 0
+  mkdir -rf "${DEST_DIR}"
+  mkdir -p "${DEST_DIR}"
+  git clone "$REPO_URL" "${DEST_DIR}"
+  rm -rf "${DEST_DIR}/.git"
+}
+
+
 ## Disabled because it's non-deterministic, making models differ when trained on different machines.
 #THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
@@ -15,6 +47,8 @@ echo "INSTANCE_DIR=${INSTANCE_DIR}"
 echo "MODEL_NAME=${MODEL_NAME}"
 echo "OUTPUT_DIR=${OUTPUT_DIR}"
 echo "MODEL_PATH=${MODEL_PATH}"
+echo "VAE_PATH=${VAE_PATH}"
+echo "CACHE_DIR=${CACHE_DIR}"
 echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
 #echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
@@ -27,38 +61,59 @@ echo "==========================================================="
 [[ $SAVE_STARTING_STEPS -lt 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
 [[ $SAVE_N_STEPS -lt 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
 
+mkdir -p "$CACHE_DIR"
 mkdir -p "$OUTPUT_DIR"
 SESSION_DIR="${OUTPUT_DIR}/${MODEL_NAME}"
 UNET_FILE="${SESSION_DIR}/unet/diffusion_pytorch_model.bin"
+VAE_FILE="${SESSION_DIR}/vae/diffusion_pytorch_model.bin"
 MODEL_DOWNLOADED="${SESSION_DIR}/downloaded.ckpt"
 
-if [ ! -f "$UNET_FILE" ]; then
+if [[ ! -f "$UNET_FILE" || !-f "$VAE_FILE" ]]; then
   echo "Creating new session for ${MODEL_NAME}..."
   mkdir -p "$SESSION_DIR"
   find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
   rm -f "${SESSION_DIR}/model_index.json"
   rm -f "${SESSION_DIR}/v1-inference.yaml"
-  if [ -z "$MODEL_PATH" ]; then
-    echo "Using the default model..."
-    rsync -ahq "/content/model/" "${SESSION_DIR}/"
-  elif [[ "$MODEL_PATH" = "/"* ]]; then
-    echo "Using model at ${MODEL_PATH}"
+
+  # Copy SD model from repo or from CKPT file.
+  if [[ "$MODEL_PATH" = "/"* && "$MODEL_PATH" = *".ckpt" ]]; then
+    echo "Extracting from CKPT model at ${MODEL_PATH}"
     python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
   elif [[ "$MODEL_PATH" = "http"* ]]; then
-    echo "Downloading model from ${MODEL_PATH}"
+    echo "Downloading CKPT model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
     wget -O "$MODEL_DOWNLOADED" "$MODEL_PATH" || exit 210
+    echo "Extracting from the downloaded CKPT model..."
     python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "$MODEL_DOWNLOADED" --dump_path "$SESSION_DIR"
     rm -f "$MODEL_DOWNLOADED"
   else
-    echo "Invalid MODEL_PATH: ${MODEL_PATH}"
-    exit 215
+    echo "Downloading base SD model from ${MODEL_PATH}..."
+    get_hf_sd_repo "$MODEL_PATH" "${CACHE_DIR}/${MODEL_PATH}" "$HF_TOKEN"
+    echo "Copying the base SD model to session directory..."
+    rsync -ahq "${CACHE_DIR}/${MODEL_PATH}/" "${SESSION_DIR}/"
   fi
-  if [ ! -f "$UNET_FILE" ]; then
+
+  # Replace VAE if specified to.
+  if [ ! -z "$VAE_PATH" ]; then
+    echo "Downloading base VAE model from ${VAE_PATH}..."
+    get_hf_vae_repo "$VAE_PATH" "${CACHE_DIR}/${VAE_PATH}"
+    echo "Replacing the base VAE model in the session directory..."
+    rm -rf "${SESSION_DIR}/vae"
+    if [ -f "${CACHE_DIR}/${VAE_PATH}/vae/diffusion_pytorch_model.bin" ]; then
+      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/vae/" "${SESSION_DIR}/vae/"
+    else
+      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/" "${SESSION_DIR}/vae/"
+    fi
+  fi
+
+  # Check if models were copied successfully
+  if [[ -f "$UNET_FILE" && -f "$VAE_FILE" ]]; then
+    echo "Found all model files."
+  else
     find "${SESSION_DIR}/" -maxdepth 1 -mindepth 1 -type d -exec rm -rf {} \;
     rm -f "${SESSION_DIR}/model_index.json"
     rm -f "${SESSION_DIR}/v1-inference.yaml"
-    echo "Unable to find the model!"
+    echo "Unable to find the SD and/or VAE model!"
     exit 220
   fi
 else
