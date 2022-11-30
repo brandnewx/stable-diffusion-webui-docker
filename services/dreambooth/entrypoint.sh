@@ -90,6 +90,7 @@ if [[ ! -f "$UNET_FILE" || ! -f "$VAE_FILE" ]]; then
     echo "Downloading base SD model from ${MODEL_PATH}..."
     get_hf_sd_repo "$MODEL_PATH" "${CACHE_DIR}/${MODEL_PATH}" "$HF_TOKEN"
     echo "Copying the base SD model to session directory..."
+    rm -rf "${CACHE_DIR}/${MODEL_PATH}/.git"
     rsync -ahq "${CACHE_DIR}/${MODEL_PATH}/" "${SESSION_DIR}/"
   fi
 
@@ -100,8 +101,10 @@ if [[ ! -f "$UNET_FILE" || ! -f "$VAE_FILE" ]]; then
     echo "Replacing the base VAE model in the session directory..."
     rm -rf "${SESSION_DIR}/vae"
     if [ -f "${CACHE_DIR}/${VAE_PATH}/vae/diffusion_pytorch_model.bin" ]; then
+      rm -rf "${CACHE_DIR}/${VAE_PATH}/vae/.git"
       rsync -ahq "${CACHE_DIR}/${VAE_PATH}/vae/" "${SESSION_DIR}/vae/"
     else
+      rm -rf "${CACHE_DIR}/${VAE_PATH}/.git"
       rsync -ahq "${CACHE_DIR}/${VAE_PATH}/" "${SESSION_DIR}/vae/"
     fi
   fi
