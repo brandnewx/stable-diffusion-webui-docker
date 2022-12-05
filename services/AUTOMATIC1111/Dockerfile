@@ -96,7 +96,16 @@ COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Test initial run to install additional files.
-RUN pip uninstall bitsandbytes --yes && pip install bitsandbytes==0.35.0
+RUN <<EOF
+pip uninstall --yes \
+  bitsandbytes \
+  transformers \
+  accelerate
+pip install \
+  accelerate==0.12.0 \
+  bitsandbytes==0.35.0 \
+  transformers==4.23.1
+EOF
 RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
 
 # WORKDIR ${ROOT}/repositories/stable-diffusion

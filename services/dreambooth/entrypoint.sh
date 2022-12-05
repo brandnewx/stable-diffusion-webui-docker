@@ -7,9 +7,11 @@ get_hf_sd_repo () {
   local REPO_NAME="$1"
   local DEST_DIR="$2"
   local HF_TOKEN="$3"
+  local COMMIT="$4"
   local REPO_URL="https://huggingface.co/${REPO_NAME}"
   [[ ! -z "$HF_TOKEN" ]] && REPO_URL="https://USER:${HF_TOKEN}@huggingface.co/${REPO_NAME}"
   [ -f "${DEST_DIR}/unet/diffusion_pytorch_model.bin" ] && echo "Getting SD model from cache instead..." && return 0
+  echo "Make sure you accepted the terms in ${REPO_URL}"
   rm -rf "${DEST_DIR}"
   mkdir -p "${DEST_DIR}"
   cd "${DEST_DIR}"
@@ -18,18 +20,22 @@ get_hf_sd_repo () {
   git remote add -f origin "$REPO_URL"
   git config core.sparsecheckout true
   echo -e "feature_extractor\nsafety_checker\nscheduler\ntext_encoder\ntokenizer\nunet\nvae\nmodel_index.json" > .git/info/sparse-checkout
-  git pull origin main
+  git reset --hard $COMMIT
+  git fetch
   rm -rf ./.git
 }
 
 get_hf_vae_repo () {
   local REPO_NAME="$1"
   local DEST_DIR="$2"
+  local COMMIT="$3"
   local REPO_URL="https://huggingface.co/${REPO_NAME}"
   [ -f "${DEST_DIR}/diffusion_pytorch_model.bin" ] && echo "Getting VAE model from cache instead..." && return 0
   rm -rf "${DEST_DIR}"
   mkdir -p "${DEST_DIR}"
-  git clone "$REPO_URL" "${DEST_DIR}"
+  cd "${DEST_DIR}"
+  git clone "$REPO_URL" .
+  git reset --hard $COMMIT
   rm -rf "${DEST_DIR}/.git"
 }
 
@@ -47,10 +53,14 @@ echo "INSTANCE_DIR=${INSTANCE_DIR}"
 echo "MODEL_NAME=${MODEL_NAME}"
 echo "OUTPUT_DIR=${OUTPUT_DIR}"
 echo "MODEL_PATH=${MODEL_PATH}"
+echo "MODEL_COMMIT=${MODEL_COMMIT}"
 echo "VAE_PATH=${VAE_PATH}"
+echo "VAE_COMMIT=${VAE_COMMIT}"
 echo "CACHE_DIR=${CACHE_DIR}"
 echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
+echo "CHECKPOINT_DIR=${CHECKPOINT_DIR}"
+echo "SCHEDULER_NAME=${SCHEDULER_NAME}"
 #echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
 echo "==========================================================="
 
@@ -60,6 +70,8 @@ echo "==========================================================="
 [[ -z $SEED ]] && SEED=1337 && echo "Setting SEED=${SEED}"
 [[ $SAVE_STARTING_STEPS -lt 0 ]] && SAVE_STARTING_STEPS=0 && echo "Setting SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
 [[ $SAVE_N_STEPS -lt 100 ]] && SAVE_N_STEPS=100 && echo "Setting SAVE_N_STEPS=${SAVE_N_STEPS}"
+[[ -z $MODEL_COMMIT ]] && MODEL_COMMIT="main" && echo "Setting MODEL_COMMIT=${MODEL_COMMIT}"
+[[ -z $VAE_COMMIT ]] && VAE_COMMIT="main" && echo "Setting VAE_COMMIT=${VAE_COMMIT}"
 
 mkdir -p "$CACHE_DIR"
 mkdir -p "$OUTPUT_DIR"
@@ -88,24 +100,24 @@ if [[ ! -f "$UNET_FILE" || ! -f "$VAE_FILE" ]]; then
     rm -f "$MODEL_DOWNLOADED"
   else
     echo "Downloading base SD model from ${MODEL_PATH}..."
-    get_hf_sd_repo "$MODEL_PATH" "${CACHE_DIR}/${MODEL_PATH}" "$HF_TOKEN"
+    get_hf_sd_repo "$MODEL_PATH" "${CACHE_DIR}/${MODEL_PATH}/${MODEL_COMMIT}" "$HF_TOKEN" "$MODEL_COMMIT"
     echo "Copying the base SD model to session directory..."
-    rm -rf "${CACHE_DIR}/${MODEL_PATH}/.git"
-    rsync -ahq "${CACHE_DIR}/${MODEL_PATH}/" "${SESSION_DIR}/"
+    rm -rf "${CACHE_DIR}/${MODEL_PATH}/${MODEL_COMMIT}/.git"
+    rsync -ahq "${CACHE_DIR}/${MODEL_PATH}/${MODEL_COMMIT}/" "${SESSION_DIR}/"
   fi
 
   # Replace VAE if specified to.
   if [ ! -z "$VAE_PATH" ]; then
     echo "Downloading base VAE model from ${VAE_PATH}..."
-    get_hf_vae_repo "$VAE_PATH" "${CACHE_DIR}/${VAE_PATH}"
+    get_hf_vae_repo "$VAE_PATH" "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}" "$VAE_COMMIT"
     echo "Replacing the base VAE model in the session directory..."
     rm -rf "${SESSION_DIR}/vae"
-    if [ -f "${CACHE_DIR}/${VAE_PATH}/vae/diffusion_pytorch_model.bin" ]; then
-      rm -rf "${CACHE_DIR}/${VAE_PATH}/vae/.git"
-      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/vae/" "${SESSION_DIR}/vae/"
+    if [ -f "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}/vae/diffusion_pytorch_model.bin" ]; then
+      rm -rf "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}/vae/.git"
+      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}/vae/" "${SESSION_DIR}/vae/"
     else
-      rm -rf "${CACHE_DIR}/${VAE_PATH}/.git"
-      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/" "${SESSION_DIR}/vae/"
+      rm -rf "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}/.git"
+      rsync -ahq "${CACHE_DIR}/${VAE_PATH}/${VAE_COMMIT}/" "${SESSION_DIR}/vae/"
     fi
   fi
 
@@ -135,6 +147,9 @@ ARG_TEXT_ENCODER_STEPS="--train_text_encoder "
 [[ $TEXT_ENCODER_STEPS -eq 0 ]] && ARG_TEXT_ENCODER_STEPS=""
 ARG_USE_BITSANDBYTES="--use_8bit_adam "
 #[[ $USE_BITSANDBYTES -eq 0 ]] && ARG_USE_BITSANDBYTES=""
+ARG_IMAGE_CAPTIONS_FILENAME="--image_captions_filename "
+ARG_PRIOR_PRESERVATION=""
+ARG_CONCEPTS_LIST=""
 
 RUN_TRAINING=$(cat << EOF
 accelerate launch \
@@ -143,8 +158,9 @@ accelerate launch \
   --num_machines=1 \
   --num_cpu_threads_per_process=4 \
   /content/diffusers/examples/dreambooth/train_dreambooth.py \
-    --image_captions_filename \
+    ${ARG_IMAGE_CAPTIONS_FILENAME} \
     ${ARG_TEXT_ENCODER_STEPS} \
+    ${ARG_USE_BITSANDBYTES} \
     --save_intermediary_dirs=$SAVE_INTERMEDIARY_DIRS \
     --save_starting_step=$SAVE_STARTING_STEPS \
     --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
@@ -159,9 +175,8 @@ accelerate launch \
     --mixed_precision=fp16 \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
-    ${ARG_USE_BITSANDBYTES} \
     --learning_rate=2e-6 \
-    --lr_scheduler=polynomial \
+    --lr_scheduler=constant \
     --center_crop \
     --lr_warmup_steps=0 \
     --max_train_steps=$MAX_TRAIN_STEPS \
@@ -177,5 +192,29 @@ if [[ $KEEP_DIFFUSERS_MODEL -eq 0 ]]; then
   rm -f "${SESSION_DIR}/model_index.json"
   rm -f "${SESSION_DIR}/v1-inference.yaml"
 fi
+
+# Save debug log
+[ -d "/usr/local/lib/python3.10/dist-packages" ] && echo $(ls -a /usr/local/lib/python3.10/dist-packages/ | sort) > "${SESSION_DIR}/dist-packages.log"
+[ -d "/usr/local/lib/python3.11/dist-packages" ] && echo $(ls -a /usr/local/lib/python3.11/dist-packages/ | sort) > "${SESSION_DIR}/dist-packages1.log"
+[ -d "/usr/local/lib/python3.12/dist-packages" ] && echo $(ls -a /usr/local/lib/python3.12/dist-packages/ | sort) > "${SESSION_DIR}/dist-packages2.log"
+[ -f "/content/diffusers/examples/dreambooth/train_dreambooth.py" ] && cp -f "/content/diffusers/examples/dreambooth/train_dreambooth.py" "${SESSION_DIR}/train_dreambooth.py.log"
+[ -f "/content/diffusers/setup.py" ] && cp -f "/content/diffusers/setup.py" "${SESSION_DIR}/setup.py.log"
+[ -f "/content/diffusers/examples/dreambooth/requirements.txt" ] && cp -f "/content/diffusers/examples/dreambooth/requirements.txt" "${SESSION_DIR}/requirements.txt.log"
+[ -f "/content/diffusers/tests/test_config.py" ] && cp -f "/content/diffusers/tests/test_config.py" "${SESSION_DIR}/test_config.py.log"
+
+# Move checkpoints to the checkpoint directory
+if [ ! -z $CHECKPOINT_DIR ]; then
+  echo "Moving checkponts to the checkpoint directory..."
+  mkdir -p "${CHECKPOINT_DIR}/${MODEL_NAME}"
+  rsync -ah --remove-source-files \
+    --include="*.ckpt" \
+    --include="*.safetensors" \
+    --include="*.log" \
+    --exclude="*" \
+    "${SESSION_DIR}/" "${CHECKPOINT_DIR}/${MODEL_NAME}/"
+fi
+
+# Clean up output directory
+[ -z "$(ls -A $SESSION_DIR)" ] && rm -r "${SESSION_DIR}"
 
 #exec "$@"

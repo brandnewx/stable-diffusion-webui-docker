@@ -9,6 +9,8 @@ x-base_service: &base_service
       - &v3 /richfast-jfs/sd/input:/input
       - &v4 ./data-dreambooth:/stable-diffusion-webui/models/dreambooth
       - &v5 ./data-dreambooth:/dreambooth-output
+      - &v6 /richfast-jfs/dreambooth-checkpoints:/dreambooth-checkpoints
+      - &v7 /richfast-jfs/dreambooth-checkpoints:/data/StableDiffusion
     deploy:
       resources:
         reservations:
@@ -30,7 +32,7 @@ services:
   auto-t4:
     <<: *base_service
     profiles: ["auto-t4"]
-    image: brandnewx/automatic1111
+    image: brandnewx/automatic1111:latest
     restart: "always"
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
@@ -38,7 +40,7 @@ services:
   auto: &automatic
     <<: *base_service
     profiles: ["auto"]
-    image: brandnewx/automatic1111
+    image: brandnewx/automatic1111:latest
     restart: "always"
     environment:
       - CLI_ARGS=--allow-code --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
@@ -46,7 +48,7 @@ services:
   dreambooth: &dreambooth
     <<: *base_service
     profiles: ["dreambooth"]
-    image: brandnewx/dreambooth
+    image: brandnewx/dreambooth:latest
     restart: "no"
     environment:
       - INSTANCE_DIR=${INSTANCE_DIR:-/input/skssks}
@@ -60,9 +62,15 @@ services:
       - KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL:-0}
       - SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS:-0}
       - CACHE_DIR=${CACHE_DIR:-/dreambooth-output/.cache}
+      - CHECKPOINT_DIR=${CHECKPOINT_DIR:-/dreambooth-checkpoints}
       - HF_TOKEN=${HF_TOKEN:-}
       - MODEL_PATH=${MODEL_PATH:-runwayml/stable-diffusion-v1-5}
+      - MODEL_COMMIT=${MODEL_COMMIT:-51b78538d58bd5526f1cf8e7c03c36e2799e0178} # half sample size
+      # - MODEL_COMMIT=${MODEL_COMMIT:-63534535d4730d5976c5c647a7f2adaea1102f5b}  # main
       - VAE_PATH=${VAE_PATH:-stabilityai/sd-vae-ft-mse}
+      # - VAE_PATH=${VAE_PATH:-}
+      - VAE_COMMIT=${VAE_COMMIT:-07d70db1bb648cea307cb6b9e32a50c8655a08e7}
+      - SCHEDULER_NAME=${SCHEDULER_NAME:-PRETRAINED}
       
   auto-cpu:
     <<: *automatic
