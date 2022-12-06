@@ -142,25 +142,15 @@ echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_DIR: $SESSION_DIR"
 
-dqt='"'
-ARG_TEXT_ENCODER_STEPS="--train_text_encoder "
-[[ $TEXT_ENCODER_STEPS -eq 0 ]] && ARG_TEXT_ENCODER_STEPS=""
-ARG_USE_BITSANDBYTES="--use_8bit_adam "
-#[[ $USE_BITSANDBYTES -eq 0 ]] && ARG_USE_BITSANDBYTES=""
-ARG_IMAGE_CAPTIONS_FILENAME="--image_captions_filename "
-ARG_PRIOR_PRESERVATION=""
-ARG_CONCEPTS_LIST=""
-
-RUN_TRAINING=$(cat << EOF
 accelerate launch \
   --mixed_precision=fp16 \
   --num_processes=1 \
   --num_machines=1 \
   --num_cpu_threads_per_process=4 \
   /content/diffusers/examples/dreambooth/train_dreambooth.py \
-    ${ARG_IMAGE_CAPTIONS_FILENAME} \
-    ${ARG_TEXT_ENCODER_STEPS} \
-    ${ARG_USE_BITSANDBYTES} \
+    --image_captions_filename \
+    --train_text_encoder \
+    --use_8bit_adam \
     --save_intermediary_dirs=$SAVE_INTERMEDIARY_DIRS \
     --save_starting_step=$SAVE_STARTING_STEPS \
     --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
@@ -176,15 +166,11 @@ accelerate launch \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
     --learning_rate=2e-6 \
-    --lr_scheduler=constant \
+    --lr_scheduler=polynomial \
     --center_crop \
     --lr_warmup_steps=0 \
     --max_train_steps=$MAX_TRAIN_STEPS \
-    --diffusers_to_ckpt_script_path='/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py'
-EOF
-)
-
-eval $RUN_TRAINING
+    --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 
 # Delete diffusers model if no flag to keep it.
 if [[ $KEEP_DIFFUSERS_MODEL -eq 0 ]]; then
