@@ -44,6 +44,7 @@ get_hf_vae_repo () {
 #THREADS_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}')
 
 echo "================== Environment Variables =================="
+echo "LEARNING_RATE=${LEARNING_RATE}"
 echo "MAX_TRAIN_STEPS=${MAX_TRAIN_STEPS}"
 echo "TEXT_ENCODER_STEPS=${TEXT_ENCODER_STEPS}"
 echo "SAVE_STARTING_STEPS=${SAVE_STARTING_STEPS}"
@@ -144,9 +145,9 @@ echo "SESSION_DIR: $SESSION_DIR"
 
 accelerate launch \
   --mixed_precision=fp16 \
-  --num_processes=1 \
+  --num_processes=4 \
   --num_machines=1 \
-  --num_cpu_threads_per_process=4 \
+  --num_cpu_threads_per_process=1 \
   /content/diffusers/examples/dreambooth/train_dreambooth.py \
     --image_captions_filename \
     --train_text_encoder \
@@ -165,7 +166,8 @@ accelerate launch \
     --mixed_precision=fp16 \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
-    --learning_rate=2e-6 \
+    --learning_rate=$LEARNING_RATE \
+    --scale_lr \
     --lr_scheduler=polynomial \
     --center_crop \
     --lr_warmup_steps=0 \

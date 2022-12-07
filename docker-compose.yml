@@ -1,53 +1,56 @@
 version: '3.9'
 
-x-base_service: &base_service
-    ports:
-      - "7860:7860"
-    volumes:
-      - &v1 ./data:/data
-      - &v2 /richfast-jfs/sd/output:/output
-      - &v3 /richfast-jfs/sd/input:/input
-      - &v4 ./data-dreambooth:/stable-diffusion-webui/models/dreambooth
-      - &v5 ./data-dreambooth:/dreambooth-output
-      - &v6 /richfast-jfs/dreambooth-checkpoints:/dreambooth-checkpoints
-      - &v7 /richfast-jfs/dreambooth-checkpoints:/data/StableDiffusion
-    deploy:
-      resources:
-        reservations:
-          devices:
-              - driver: nvidia
-                count: all
-                capabilities: [gpu]
+x-base_service:
+  &base_service
+  ports:
+    - "7860:7860"
+  volumes:
+    - &v1 ./data:/data
+    - &v2 /richfast-jfs/sd/output:/output
+    - &v3 /richfast-jfs/sd/input:/input
+    - &v4 ./data-dreambooth:/stable-diffusion-webui/models/dreambooth
+    - &v5 ./data-dreambooth:/dreambooth-output
+    - &v6 /richfast-jfs/dreambooth-checkpoints:/dreambooth-checkpoints
+    - &v7 /richfast-jfs/dreambooth-checkpoints:/data/StableDiffusion
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [ gpu ]
 
 name: webui-docker
 
 services:
   download:
     build: ./services/download/
-    profiles: ["download"]
+    profiles: [ "download" ]
     restart: "no"
     volumes:
       - *v1
 
   auto-t4:
     <<: *base_service
-    profiles: ["auto-t4"]
+    profiles: [ "auto-t4" ]
     image: brandnewx/automatic1111:latest
     restart: "always"
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --force-enable-xformers --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
-      
-  auto: &automatic
+
+  auto:
+    &automatic
     <<: *base_service
-    profiles: ["auto"]
+    profiles: [ "auto" ]
     image: brandnewx/automatic1111:latest
     restart: "always"
     environment:
       - CLI_ARGS=--allow-code --opt-split-attention --enable-insecure-extension-access --administrator --disable-safe-unpickle
-      
-  dreambooth: &dreambooth
+
+  dreambooth:
+    &dreambooth
     <<: *base_service
-    profiles: ["dreambooth"]
+    profiles: [ "dreambooth" ]
     image: brandnewx/dreambooth:latest
     restart: "no"
     environment:
@@ -71,10 +74,11 @@ services:
       # - VAE_PATH=${VAE_PATH:-}
       - VAE_COMMIT=${VAE_COMMIT:-07d70db1bb648cea307cb6b9e32a50c8655a08e7}
       - SCHEDULER_NAME=${SCHEDULER_NAME:-PRETRAINED}
-      
+      - LEARNING_RATE=${LEARNING_RATE:-0.000002}
+
   auto-cpu:
     <<: *automatic
-    profiles: ["auto-cpu"]
+    profiles: [ "auto-cpu" ]
     deploy: {}
     restart: "always"
     environment:
@@ -82,7 +86,7 @@ services:
 
   hlky:
     <<: *base_service
-    profiles: ["hlky"]
+    profiles: [ "hlky" ]
     build: ./services/hlky/
     image: sd-hlky:8
     restart: "always"
@@ -92,7 +96,7 @@ services:
 
   lstein:
     <<: *base_service
-    profiles: ["lstein"]
+    profiles: [ "lstein" ]
     build: ./services/lstein/
     image: sd-lstein:6
     restart: "always"
