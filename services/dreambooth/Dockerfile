@@ -19,7 +19,7 @@ RUN <<EOF
 pip install \
     # triton==2.0.0.dev20221117 \
     # accelerate==0.14.0 \
-    omegaconf==2.2.3 \
+    omegaconf==2.2.3
     # open-clip-torch==2.7.0 \
     # torchsde==0.2.5 \
     # pytorch-lightning==1.8.3.post1
