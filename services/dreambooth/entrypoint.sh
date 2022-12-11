@@ -62,6 +62,9 @@ echo "KEEP_DIFFUSERS_MODEL=${KEEP_DIFFUSERS_MODEL}"
 echo "SAVE_INTERMEDIARY_DIRS=${SAVE_INTERMEDIARY_DIRS}"
 echo "CHECKPOINT_DIR=${CHECKPOINT_DIR}"
 echo "SCHEDULER_NAME=${SCHEDULER_NAME}"
+echo "SUBFOLDER_MODE=${SUBFOLDER_MODE}"
+echo "CLASSES_ROOT_DIR=${CLASSES_ROOT_DIR}"
+echo "NUM_CLASS_IMAGES=${NUM_CLASS_IMAGES}"
 #echo "USE_BITSANDBYTES=${USE_BITSANDBYTES}"
 echo "==========================================================="
 
@@ -143,36 +146,75 @@ echo "Starting Dreambooth training..."
 echo "INSTANCE_DIR: $INSTANCE_DIR"
 echo "SESSION_DIR: $SESSION_DIR"
 
-accelerate launch \
-  --mixed_precision=fp16 \
-  --num_processes=4 \
-  --num_machines=1 \
-  --num_cpu_threads_per_process=1 \
-  /content/diffusers/examples/dreambooth/train_dreambooth.py \
-    --image_captions_filename \
-    --train_text_encoder \
-    --use_8bit_adam \
-    --save_intermediary_dirs=$SAVE_INTERMEDIARY_DIRS \
-    --save_starting_step=$SAVE_STARTING_STEPS \
-    --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
-    --save_n_steps=$SAVE_N_STEPS \
-    --pretrained_model_name_or_path=$SESSION_DIR \
-    --instance_data_dir=$INSTANCE_DIR \
-    --output_dir=$SESSION_DIR \
-    --Session_dir=$SESSION_DIR \
-    --instance_prompt=$MODEL_NAME \
-    --seed=$SEED \
-    --resolution=512 \
+if [[ -z $SUBFOLDER_MODE || $SUBFOLDER_MODE -le 0 ]]; then
+  accelerate launch \
     --mixed_precision=fp16 \
-    --train_batch_size=1 \
-    --gradient_accumulation_steps=1 \
-    --learning_rate=$LEARNING_RATE \
-    --scale_lr \
-    --lr_scheduler=polynomial \
-    --center_crop \
-    --lr_warmup_steps=0 \
-    --max_train_steps=$MAX_TRAIN_STEPS \
-    --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+    --num_processes=4 \
+    --num_machines=1 \
+    --num_cpu_threads_per_process=1 \
+    /content/diffusers/examples/dreambooth/train_dreambooth.py \
+      --image_captions_filename \
+      --train_text_encoder \
+      --use_8bit_adam \
+      --save_intermediary_dirs=$SAVE_INTERMEDIARY_DIRS \
+      --save_starting_step=$SAVE_STARTING_STEPS \
+      --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
+      --save_n_steps=$SAVE_N_STEPS \
+      --pretrained_model_name_or_path=$SESSION_DIR \
+      --instance_data_dir=$INSTANCE_DIR \
+      --output_dir=$SESSION_DIR \
+      --Session_dir=$SESSION_DIR \
+      --instance_prompt=$MODEL_NAME \
+      --seed=$SEED \
+      --resolution=512 \
+      --mixed_precision=fp16 \
+      --train_batch_size=1 \
+      --gradient_accumulation_steps=1 \
+      --learning_rate=$LEARNING_RATE \
+      --scale_lr \
+      --lr_scheduler=constant \
+      --center_crop \
+      --lr_warmup_steps=0 \
+      --max_train_steps=$MAX_TRAIN_STEPS \
+      --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+else
+  accelerate launch \
+    --mixed_precision=fp16 \
+    --num_processes=4 \
+    --num_machines=1 \
+    --num_cpu_threads_per_process=1 \
+    /content/diffusers/examples/dreambooth/train_dreambooth.py \
+      --gradient_checkpointing \
+      --image_captions_filename \
+      --train_text_encoder \
+      --with_prior_preservation \
+      --prior_loss_weight=1.0 \
+      --subfolder_mode \
+      --class_data_dir=$CLASSES_ROOT_DIR \
+      --num_class_images=$NUM_CLASS_IMAGES \
+      --use_8bit_adam \
+      --save_intermediary_dirs=$SAVE_INTERMEDIARY_DIRS \
+      --save_starting_step=$SAVE_STARTING_STEPS \
+      --stop_text_encoder_training=$TEXT_ENCODER_STEPS \
+      --save_n_steps=$SAVE_N_STEPS \
+      --pretrained_model_name_or_path=$SESSION_DIR \
+      --instance_data_dir=$INSTANCE_DIR \
+      --output_dir=$SESSION_DIR \
+      --Session_dir=$SESSION_DIR \
+      --instance_prompt=$MODEL_NAME \
+      --seed=$SEED \
+      --resolution=512 \
+      --mixed_precision=fp16 \
+      --train_batch_size=1 \
+      --gradient_accumulation_steps=1 \
+      --learning_rate=$LEARNING_RATE \
+      --scale_lr \
+      --lr_scheduler=constant \
+      --center_crop \
+      --lr_warmup_steps=0 \
+      --max_train_steps=$MAX_TRAIN_STEPS \
+      --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+fi
 
 # Delete diffusers model if no flag to keep it.
 if [[ $KEEP_DIFFUSERS_MODEL -eq 0 ]]; then
