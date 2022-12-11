@@ -59,7 +59,7 @@ echo "Installing Diffusers libraries..."
 mkdir -p /content/diffusers
 cd /content/diffusers
 git clone https://github.com/brandnewx/thelastben .
-echo "resetting to main #22222245..."
+echo "resetting to main #22222246..."
 #git checkout pre-merge
 git reset --hard ${THELASTBEN_DIFFUSERS_COMMIT}
 python3 -u setup.py install
