@@ -16,6 +16,30 @@ COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 RUN <<EOF
+mkdir -p "/content/models/clip-vit-large-patch14"
+cd "/content/models/clip-vit-large-patch14"
+git init .
+git lfs install --system --skip-repo
+git remote add -f origin "https://huggingface.co/openai/clip-vit-large-patch14"
+git config core.sparsecheckout true
+echo -e "config.json\nmerges.txt\npreprocessor_config.json\npytorch_model.bin\nspecial_tokens_map.json\ntokenizer.json\ntokenizer_config.json\nvocab.json\nvocab.txt" > .git/info/sparse-checkout
+git pull
+rm -rf ./.git
+EOF
+
+RUN <<EOF
+mkdir -p "/content/models/bert-base-uncased"
+cd "/content/models/bert-base-uncased"
+git init .
+git lfs install --system --skip-repo
+git remote add -f origin "https://huggingface.co/bert-base-uncased"
+git config core.sparsecheckout true
+echo -e "config.json\nmerges.txt\npreprocessor_config.json\npytorch_model.bin\nspecial_tokens_map.json\ntokenizer.json\ntokenizer_config.json\nvocab.json\nvocab.txt" > .git/info/sparse-checkout
+git pull
+rm -rf ./.git
+EOF
+
+RUN <<EOF
 pip uninstall bitsandbytes --yes
 pip install bitsandbytes==0.35.0 omegaconf==2.2.3
 EOF
