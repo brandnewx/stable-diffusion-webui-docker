@@ -94,13 +94,13 @@ if [[ ! -f "$UNET_FILE" || ! -f "$VAE_FILE" ]]; then
   # Copy SD model from repo or from CKPT file.
   if [[ "$MODEL_PATH" = "/"* && "$MODEL_PATH" = *".ckpt" ]]; then
     echo "Extracting from CKPT model at ${MODEL_PATH}"
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
+    python3 -u /content/diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "${MODEL_PATH}" --dump_path "$SESSION_DIR"
   elif [[ "$MODEL_PATH" = "http"* ]]; then
     echo "Downloading CKPT model from ${MODEL_PATH}"
     rm -f "$MODEL_DOWNLOADED"
     wget -O "$MODEL_DOWNLOADED" "$MODEL_PATH" || exit 210
     echo "Extracting from the downloaded CKPT model..."
-    python3 -u /content/hf-diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "$MODEL_DOWNLOADED" --dump_path "$SESSION_DIR"
+    python3 -u /content/diffusers/scripts/convert_original_stable_diffusion_to_diffusers.py --checkpoint_path "$MODEL_DOWNLOADED" --dump_path "$SESSION_DIR"
     rm -f "$MODEL_DOWNLOADED"
   else
     echo "Downloading base SD model from ${MODEL_PATH}..."
@@ -176,7 +176,7 @@ if [[ -z $SUBFOLDER_MODE || $SUBFOLDER_MODE -le 0 ]]; then
       --center_crop \
       --lr_warmup_steps=0 \
       --max_train_steps=$MAX_TRAIN_STEPS \
-      --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+      --diffusers_to_ckpt_script_path="/content/diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 else
   accelerate launch \
     --mixed_precision=fp16 \
@@ -213,7 +213,7 @@ else
       --center_crop \
       --lr_warmup_steps=0 \
       --max_train_steps=$MAX_TRAIN_STEPS \
-      --diffusers_to_ckpt_script_path="/content/hf-diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
+      --diffusers_to_ckpt_script_path="/content/diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 fi
 
 # Delete diffusers model if no flag to keep it.
