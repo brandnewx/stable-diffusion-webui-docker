@@ -56,11 +56,6 @@ ENV HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
 RUN <<EOF
 echo "Installing Diffusers libraries..."
-mkdir -p /content/hf-diffusers/scripts
-cd /content/hf-diffusers/scripts
-wget https://raw.githubusercontent.com/huggingface/diffusers/${HF_DIFFUSERS_COMMIT}/scripts/convert_original_stable_diffusion_to_diffusers.py
-wget https://raw.githubusercontent.com/huggingface/diffusers/${HF_DIFFUSERS_COMMIT}/scripts/convert_diffusers_to_original_stable_diffusion.py
-
 mkdir -p /content/diffusers
 cd /content/diffusers
 git clone https://github.com/brandnewx/thelastben .
