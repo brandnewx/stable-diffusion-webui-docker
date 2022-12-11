@@ -15,8 +15,6 @@ RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
-COPY ./tokenizer /content/models/tokenizer
-
 RUN <<EOF
 mkdir -p "/content/models/clip-vit-large-patch14"
 cd "/content/models/clip-vit-large-patch14"
@@ -70,6 +68,8 @@ pip install -r /content/diffusers/examples/dreambooth/requirements.txt
 EOF
 
 WORKDIR /
+
+COPY ./tokenizer /content/models/tokenizer
 
 COPY ./entrypoint.sh /entrypoint.sh
 
