@@ -15,6 +15,8 @@ RUN apt-get update -q && apt-get install -y git git-lfs && apt-get clean
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
+COPY ./tokenizer /content/models/tokenizer
+
 RUN <<EOF
 mkdir -p "/content/models/clip-vit-large-patch14"
 cd "/content/models/clip-vit-large-patch14"
@@ -59,7 +61,7 @@ echo "Installing Diffusers libraries..."
 mkdir -p /content/diffusers
 cd /content/diffusers
 git clone https://github.com/brandnewx/thelastben .
-echo "resetting to main #22222246..."
+echo "resetting to main #22222247..."
 #git checkout pre-merge
 git reset --hard ${THELASTBEN_DIFFUSERS_COMMIT}
 python3 -u setup.py install
