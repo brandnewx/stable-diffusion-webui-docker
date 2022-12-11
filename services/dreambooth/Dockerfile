@@ -16,16 +16,15 @@ COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 RUN <<EOF
-pip install \
-    # triton==2.0.0.dev20221117 \
-    # accelerate==0.14.0 \
-    omegaconf==2.2.3
-    # open-clip-torch==2.7.0 \
-    # torchsde==0.2.5 \
-    # pytorch-lightning==1.8.3.post1
 pip uninstall bitsandbytes --yes
-pip install bitsandbytes==0.35.0
+pip install bitsandbytes==0.35.0 omegaconf==2.2.3
 EOF
+
+# triton==2.0.0.dev20221117 \
+# accelerate==0.14.0 \
+# open-clip-torch==2.7.0 \
+# torchsde==0.2.5 \
+# pytorch-lightning==1.8.3.post1
 
 #ENV THELASTBEN_DIFFUSERS_COMMIT=70179b7bf3d6aa69994e1b0ffdeae440c7f054e5
 ENV THELASTBEN_DIFFUSERS_COMMIT=main
