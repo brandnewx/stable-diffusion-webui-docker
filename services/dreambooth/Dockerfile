@@ -51,7 +51,7 @@ EOF
 # pytorch-lightning==1.8.3.post1
 
 #ENV THELASTBEN_DIFFUSERS_COMMIT=70179b7bf3d6aa69994e1b0ffdeae440c7f054e5
-ENV THELASTBEN_DIFFUSERS_COMMIT=main
+ENV THELASTBEN_DIFFUSERS_COMMIT=merge1
 ENV HF_DIFFUSERS_COMMIT=9f10c545cbf54dd4d87e7e0f24e1ec02e928c966
 
 RUN <<EOF
@@ -59,8 +59,8 @@ echo "Installing Diffusers libraries..."
 mkdir -p /content/diffusers
 cd /content/diffusers
 git clone https://github.com/brandnewx/thelastben .
-echo "resetting to main #22222247..."
-#git checkout pre-merge
+echo "resetting to main #22222262..."
+git checkout merge1
 git reset --hard ${THELASTBEN_DIFFUSERS_COMMIT}
 python3 -u setup.py install
 rm -rf ./.git

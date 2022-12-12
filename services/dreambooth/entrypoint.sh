@@ -176,6 +176,7 @@ if [[ -z $SUBFOLDER_MODE || $SUBFOLDER_MODE -le 0 ]]; then
       --center_crop \
       --lr_warmup_steps=0 \
       --max_train_steps=$MAX_TRAIN_STEPS \
+      --scheduler_name=$SCHEDULER_NAME \
       --diffusers_to_ckpt_script_path="/content/diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 else
   accelerate launch \
@@ -213,6 +214,7 @@ else
       --center_crop \
       --lr_warmup_steps=0 \
       --max_train_steps=$MAX_TRAIN_STEPS \
+      --scheduler_name=$SCHEDULER_NAME \
       --diffusers_to_ckpt_script_path="/content/diffusers/scripts/convert_diffusers_to_original_stable_diffusion.py"
 fi
 
