@@ -87,22 +87,27 @@ services:
     environment:
       - CLI_ARGS=--no-half --precision full
 
-  hlky:
+  sygil:
+    &sygil
     <<: *base_service
-    profiles: [ "hlky" ]
-    build: ./services/hlky/
-    image: sd-hlky:8
-    restart: "always"
+    profiles: [ "sygil" ]
+    build: ./services/sygil/
+    image: sd-sygil:14
     environment:
       - CLI_ARGS=--optimized-turbo
       - USE_STREAMLIT=0
 
-  lstein:
+  sygil-sl:
+    <<: *sygil
+    profiles: [ "sygil-sl" ]
+    environment:
+      - USE_STREAMLIT=1
+
+  invoke:
     <<: *base_service
-    profiles: [ "lstein" ]
-    build: ./services/lstein/
-    image: sd-lstein:6
-    restart: "always"
+    profiles: [ "invoke" ]
+    build: ./services/invoke/
+    image: sd-invoke:12
     environment:
       - PRELOAD=true
-      - CLI_ARGS=--max_loaded_models=1
+      - CLI_ARGS=
