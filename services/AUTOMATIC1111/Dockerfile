@@ -61,8 +61,6 @@ ARG SHA=e26174a81f81ce876d037877c33795424208b091
 RUN <<EOF
 echo "Installing WebUI #1"
 cd stable-diffusion-webui
-git fetch 
-git reset --hard
 pip install -r requirements_versions.txt
 EOF
 
