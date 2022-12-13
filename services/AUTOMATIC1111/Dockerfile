@@ -58,11 +58,13 @@ RUN pip install opencv-python-headless==4.6.0.66 \
 # instead, update the repo state in a later step
 
 ARG SHA=e26174a81f81ce876d037877c33795424208b091
-RUN cd stable-diffusion-webui && \
-  git fetch && \
-  # git reset --hard ${SHA} && \
-  git reset --hard && \
-  pip install -r requirements_versions.txt
+RUN <<EOF
+echo "Installing WebUI #1"
+cd stable-diffusion-webui
+git fetch 
+git reset --hard
+pip install -r requirements_versions.txt
+EOF
 
 COPY . /docker
 
