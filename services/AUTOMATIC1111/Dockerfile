@@ -35,6 +35,7 @@ ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
 RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
   cd stable-diffusion-webui && \
+  git switch merge1 && \
   git reset --hard merge1 && \
   pip install -r requirements_versions.txt
 
