@@ -51,14 +51,12 @@ RUN [[ "${DEEPDANBOORU:-0}" == "0" ]] && : || pip install tensorflow-cpu==2.10 t
 RUN pip install opencv-python-headless==4.6.0.66 \
   git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379 \
   git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1 \
-  pyngrok==5.1.0 \
   git+https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b \
+  pyngrok==5.1.0
+# Note: don't update the sha of previous versions because the install will take forever
+# instead, update the repo state in a later step
 
-
-  # Note: don't update the sha of previous versions because the install will take forever
-  # instead, update the repo state in a later step
-
-  ARG SHA=e26174a81f81ce876d037877c33795424208b090
+ARG SHA=e26174a81f81ce876d037877c33795424208b090
 RUN cd stable-diffusion-webui && \
   git fetch && \
   # git reset --hard ${SHA} && \
