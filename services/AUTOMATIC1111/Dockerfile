@@ -33,11 +33,14 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 RUN apt-get update -qq && apt-get install -yq fonts-dejavu-core rsync git jq moreutils && apt-get clean
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-RUN git clone https://github.com/brandnewx/stable-diffusion-webui.git && \
-  cd stable-diffusion-webui && \
-  git switch merge1 && \
-  git reset --hard merge1 && \
-  pip install -r requirements_versions.txt
+RUN <<EOF
+echo "Installing Web UI... #1"
+git clone https://github.com/brandnewx/stable-diffusion-webui.git
+cd stable-diffusion-webui
+git switch merge1
+git reset --hard merge1 
+pip install -r requirements_versions.txt
+EOF
 
 ENV ROOT=/stable-diffusion-webui
 
@@ -57,12 +60,12 @@ RUN pip install opencv-python-headless==4.6.0.66 \
 # Note: don't update the sha of previous versions because the install will take forever
 # instead, update the repo state in a later step
 
-ARG SHA=e26174a81f81ce876d037877c33795424208b091
-RUN <<EOF
-echo "Installing WebUI #1"
-cd stable-diffusion-webui
-pip install -r requirements_versions.txt
-EOF
+# ARG SHA=e26174a81f81ce876d037877c33795424208b091
+# RUN <<EOF
+# echo "Installing WebUI #1"
+# cd stable-diffusion-webui
+# pip install -r requirements_versions.txt
+# EOF
 
 COPY . /docker
 
