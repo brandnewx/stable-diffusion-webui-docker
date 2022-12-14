@@ -70,9 +70,9 @@ services:
       - MODEL_PATH=${MODEL_PATH:-runwayml/stable-diffusion-v1-5}
       - MODEL_COMMIT=${MODEL_COMMIT:-51b78538d58bd5526f1cf8e7c03c36e2799e0178} # half sample size
       # - MODEL_COMMIT=${MODEL_COMMIT:-63534535d4730d5976c5c647a7f2adaea1102f5b}  # main
-      - VAE_PATH=${VAE_PATH:-stabilityai/sd-vae-ft-mse}
-      # - VAE_PATH=${VAE_PATH:-}
-      - VAE_COMMIT=${VAE_COMMIT:-07d70db1bb648cea307cb6b9e32a50c8655a08e7}
+      - VAE_PATH=${VAE_PATH-stabilityai/sd-vae-ft-mse}
+      # - VAE_PATH=${VAE_PATH-}
+      - VAE_COMMIT=${VAE_COMMIT-07d70db1bb648cea307cb6b9e32a50c8655a08e7}
       - SCHEDULER_NAME=${SCHEDULER_NAME:-PRETRAINED}
       - LEARNING_RATE=${LEARNING_RATE:-0.000002}
       - CLASSES_ROOT_DIR=${CLASSES_ROOT_DIR:-/input/classes}
