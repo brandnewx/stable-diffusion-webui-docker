@@ -74,7 +74,7 @@ pip install -r requirements_versions.txt
 EOF
 
 # Install extensions
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.cache/pip <<EOF
 cat <<'EOE' > /install-extension.sh
 mkdir -p ${ROOT}/extensions/"$1" && cd ${ROOT}/extensions/"$1" && git init && git remote add origin "$2" && git fetch origin "$3" --depth=1 && git reset --hard "$3" && rm -rf .git
 cd ${ROOT}/extensions/"$1"
@@ -103,9 +103,9 @@ RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
   mv  ${ROOT}/style.css ${ROOT}/user.css && \
   sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 
-# Copy xformers
-COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+## Copy xformers
+#COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
+#RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Test initial run to install additional files.
 RUN <<EOF
@@ -116,7 +116,7 @@ sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-pa
 EOF
 
 # Test initial run to install additional files.
-RUN <<EOF
+RUN --mount=type=cache,target=/root/.cache/pip  <<EOF
 pip uninstall --yes \
   bitsandbytes \
   transformers \
