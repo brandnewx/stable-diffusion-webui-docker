@@ -105,7 +105,7 @@ python3 /docker/info.py ${ROOT}/modules/ui.py
 mv ${ROOT}/style.css ${ROOT}/user.css
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 # one of the ugliest hacks I ever wrote
-sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
+#sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
 EOF
 
 # Copy xformers
