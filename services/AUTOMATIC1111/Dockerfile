@@ -113,7 +113,7 @@ COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 
-# Test initial run to install additional files.
+
 RUN --mount=type=cache,target=/root/.cache/pip  <<EOF
 pip uninstall --yes \
   bitsandbytes \
@@ -126,10 +126,12 @@ pip install \
   opencv-python-headless
 EOF
 
-RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
-
 WORKDIR ${ROOT}
 ENV CLI_ARGS="" PYTHONUNBUFFERED=1
+
+# Test initial run to install additional files.
+RUN python3 -u ${ROOT}/webui.py --test --ui-debug-mode --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --allow-code --medvram --xformers --opt-split-attention --enable-insecure-extension-access --administrator
+
 EXPOSE 7860
 ENTRYPOINT ["/docker/entrypoint.sh"]
 # run, -u to not buffer stdout / stderr
