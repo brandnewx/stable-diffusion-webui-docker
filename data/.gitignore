@@ -12,9 +12,11 @@
 /RealESRGAN
 /SwinIR
 /MiDaS
+/BLIP
 /ScuNET
 /LDSR
 /Deepdanbooru
 /Hypernetworks
 /VAE
 /embeddings
+/Lora
