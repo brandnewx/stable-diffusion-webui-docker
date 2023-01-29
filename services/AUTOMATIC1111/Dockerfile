@@ -38,7 +38,7 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 RUN apt-get update -qq && apt-get install -yq fonts-dejavu-core rsync git jq moreutils && apt-get clean
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+# RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
@@ -72,13 +72,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Note: don't update the sha of previous versions because the install will take forever
 # instead, update the repo state in a later step
 
-ARG SHA=7a14c8ab45da8a681792a6331d48a88dd684a0a9
-RUN --mount=type=cache,target=/root/.cache/pip <<EOF
-cd stable-diffusion-webui
-git fetch
-git reset --hard ${SHA}
-pip install -r requirements_versions.txt
-EOF
+#ARG SHA=7a14c8ab45da8a681792a6331d48a88dd684a0a9
+#RUN --mount=type=cache,target=/root/.cache/pip <<EOF
+#cd stable-diffusion-webui
+#git fetch
+#git reset --hard ${SHA}
+#pip install -r requirements_versions.txt
+#EOF
 
 # Install extensions
 RUN <<EOF
