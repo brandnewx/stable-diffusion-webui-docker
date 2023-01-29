@@ -84,16 +84,17 @@ exit 0
 EOE
 EOF
 
-# RUN . /install-extension.sh sd_dreambooth_extension https://github.com/d8ahazard/sd_dreambooth_extension 725d85ca5485246a430d2f31f624646d061e8104
-# RUN . /install-extension.sh stable-diffusion-webui-aesthetic-gradients https://github.com/AUTOMATIC1111/stable-diffusion-webui-aesthetic-gradients 411889ca602f20b8bb5e4d1af2b9686eab1913b1
-RUN . /install-extension.sh stable-diffusion-webui-wildcards https://github.com/AUTOMATIC1111/stable-diffusion-webui-wildcards 6ed81ed1eaee9145b596ab6385c38ffd8ce7b13f
+# RUN . /install-extension.sh sd-dreambooth https://github.com/d8ahazard/sd_dreambooth_extension 725d85ca5485246a430d2f31f624646d061e8104
+# RUN . /install-extension.sh sd-aesthetic-gradients https://github.com/AUTOMATIC1111/stable-diffusion-webui-aesthetic-gradients 411889ca602f20b8bb5e4d1af2b9686eab1913b1
+RUN . /install-extension.sh sd-wildcards https://github.com/AUTOMATIC1111/stable-diffusion-webui-wildcards 6ed81ed1eaee9145b596ab6385c38ffd8ce7b13f
 RUN . /install-extension.sh sd-dynamic-prompts https://github.com/adieyal/sd-dynamic-prompts c7434e7822bdb1d2c2f117d0edbfe28fd1f63461
-RUN . /install-extension.sh stable-diffusion-webui-images-browser https://github.com/yfszzx/stable-diffusion-webui-images-browser 15528557c0434f66fd863347e2ecaff72f4f6f12
-# RUN . /install-extension.sh stable-diffusion-webui-aesthetic-image-scorer https://github.com/tsngo/stable-diffusion-webui-aesthetic-image-scorer e6389da7a5827e700522ff1943ee4ae2c5010089
-# RUN . /install-extension.sh auto-sd-paint-ext https://github.com/Interpause/auto-sd-paint-ext 7401bfcd05f382c56cdee147e089fc0a4ca0ea34
-# RUN . /install-extension.sh a1111-sd-webui-tagcomplete https://github.com/DominikDoom/a1111-sd-webui-tagcomplete 894335f1dead68cf82ae147d3e53b37abe8fb597
-# RUN . /install-extension.sh ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
-# RUN . /install-extension.sh DreamArtist-sd-webui-extension https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
+RUN . /install-extension.sh sd-images-browser https://github.com/yfszzx/stable-diffusion-webui-images-browser 15528557c0434f66fd863347e2ecaff72f4f6f12
+# RUN . /install-extension.sh sd-aesthetic-image-scorer https://github.com/tsngo/stable-diffusion-webui-aesthetic-image-scorer e6389da7a5827e700522ff1943ee4ae2c5010089
+# RUN . /install-extension.sh sd-paint-ext https://github.com/Interpause/auto-sd-paint-ext 7401bfcd05f382c56cdee147e089fc0a4ca0ea34
+# RUN . /install-extension.sh sd-tagcomplete https://github.com/DominikDoom/a1111-sd-webui-tagcomplete 894335f1dead68cf82ae147d3e53b37abe8fb597
+# RUN . /install-extension.sh sd-ddetailer https://github.com/dustysys/ddetailer 8e58e7fec774cfe41490a5dda6458fcbbea78493
+# RUN . /install-extension.sh sd-dreamartist https://github.com/7eu7d7/DreamArtist-sd-webui-extension 9e0d7da5b445d0342047c0b022baf114c8d30b33
+RUN . /install-extension.sh sd-instruct-pix2pix https://github.com/brandnewx/stable-diffusion-webui-instruct-pix2pix 72c5eb2c00ac7a85985822121be193e3f21c45e2
 
 
 RUN --mount=type=cache,target=/root/.cache/pip  pip install -U opencv-python-headless
@@ -111,7 +112,6 @@ EOF
 # Copy xformers
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
-
 
 
 RUN --mount=type=cache,target=/root/.cache/pip  <<EOF
