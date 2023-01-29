@@ -23,9 +23,9 @@ RUN . /clone.sh k-diffusion https://github.com/crowsonkb/k-diffusion.git 5b3af03
 RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interrogator 2486589f24165c8e3b303f84e9dbbea318df83e8
 
 
-FROM alpine:3.17 as xformers
-RUN apk add --no-cache aria2
-RUN aria2c -x 5 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/4.1.0/xformers-0.0.16.dev421-cp310-cp310-manylinux2014_x86_64.whl'
+#FROM alpine:3.17 as xformers
+#RUN apk add --no-cache aria2
+#RUN aria2c -x 5 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/4.1.0/xformers-0.0.16.dev421-cp310-cp310-manylinux2014_x86_64.whl'
 
 
 FROM brandnewx/ubuntu22:cuda-pytorch
@@ -38,15 +38,15 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 RUN apt-get update -qq && apt-get install -yq fonts-dejavu-core rsync git jq moreutils && apt-get clean
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
 
-# RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+#RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
 
 
-RUN --mount=type=cache,target=/root/.cache/pip  \
-  --mount=type=bind,from=xformers,source=/wheel.whl,target=/xformers-0.0.15-cp310-cp310-linux_x86_64.whl \
-  pip install triton /xformers-0.0.15-cp310-cp310-linux_x86_64.whl
+#RUN --mount=type=cache,target=/root/.cache/pip  \
+#  --mount=type=bind,from=xformers,source=/wheel.whl,target=/xformers-0.0.15-cp310-cp310-linux_x86_64.whl \
+#  pip install triton /xformers-0.0.15-cp310-cp310-linux_x86_64.whl
 
 ENV ROOT=/stable-diffusion-webui
 
@@ -103,9 +103,9 @@ RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
   mv  ${ROOT}/style.css ${ROOT}/user.css && \
   sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 
-## Copy xformers
-#COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
-#RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
+# Copy xformers
+COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
+RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
 # Test initial run to install additional files.
 RUN <<EOF
