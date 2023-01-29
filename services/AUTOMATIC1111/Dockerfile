@@ -37,8 +37,8 @@ RUN <<EOF
 echo "Installing Web UI... #1"
 git clone https://github.com/brandnewx/stable-diffusion-webui.git
 cd stable-diffusion-webui
-git switch merge1
-git reset --hard merge1 
+git switch merge2
+git reset --hard merge2 
 pip install -r requirements_versions.txt
 EOF
 
