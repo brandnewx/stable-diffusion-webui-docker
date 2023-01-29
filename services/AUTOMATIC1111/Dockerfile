@@ -50,6 +50,7 @@ RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y &&
 
 RUN --mount=type=cache,target=/root/.cache/pip <<EOF
 echo "Installing Web UI... #1"
+cd /
 git clone https://github.com/brandnewx/stable-diffusion-webui.git
 cd stable-diffusion-webui
 git switch merge2
