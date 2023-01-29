@@ -100,21 +100,18 @@ RUN --mount=type=cache,target=/root/.cache/pip  pip install -U opencv-python-hea
 
 COPY . /docker
 
-RUN python3 /docker/info.py ${ROOT}/modules/ui.py && \
-  mv  ${ROOT}/style.css ${ROOT}/user.css && \
-  sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
+RUN <<EOF
+python3 /docker/info.py ${ROOT}/modules/ui.py
+mv ${ROOT}/style.css ${ROOT}/user.css
+sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
+# one of the ugliest hacks I ever wrote
+sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
+EOF
 
 # Copy xformers
 COPY --from=brandnewx/xformers /xformers-dist /xformers-dist
 RUN pip uninstall xformers --yes && pip install /xformers-dist/*.whl && rm -rf /xformers-dist
 
-# Test initial run to install additional files.
-RUN <<EOF
-python3 /docker/info.py ${ROOT}/modules/ui.py
-mv ${ROOT}/style.css ${ROOT}/user.css
-# one of the ugliest hacks I ever wrote
-sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
-EOF
 
 # Test initial run to install additional files.
 RUN --mount=type=cache,target=/root/.cache/pip  <<EOF
