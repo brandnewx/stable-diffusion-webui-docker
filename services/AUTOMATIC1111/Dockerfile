@@ -48,6 +48,15 @@ RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y &&
 #  --mount=type=bind,from=xformers,source=/wheel.whl,target=/xformers-0.0.15-cp310-cp310-linux_x86_64.whl \
 #  pip install triton /xformers-0.0.15-cp310-cp310-linux_x86_64.whl
 
+RUN --mount=type=cache,target=/root/.cache/pip <<EOF
+echo "Installing Web UI... #1"
+git clone https://github.com/brandnewx/stable-diffusion-webui.git
+cd stable-diffusion-webui
+git switch merge2
+git reset --hard merge2 
+pip install -r requirements_versions.txt
+EOF
+
 ENV ROOT=/stable-diffusion-webui
 
 COPY --from=download /git/ ${ROOT}
@@ -63,15 +72,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # Note: don't update the sha of previous versions because the install will take forever
 # instead, update the repo state in a later step
-
-RUN --mount=type=cache,target=/root/.cache/pip <<EOF
-echo "Installing Web UI... #1"
-git clone https://github.com/brandnewx/stable-diffusion-webui.git
-cd stable-diffusion-webui
-git switch merge2
-git reset --hard merge2 
-pip install -r requirements_versions.txt
-EOF
 
 # Install extensions
 RUN --mount=type=cache,target=/root/.cache/pip <<EOF
